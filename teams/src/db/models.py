@@ -22,7 +22,8 @@ class Athlete(Base):
     first_name: Mapped[str] = mapped_column(String(50), nullable=False)
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
     date_of_birth: Mapped[Date] = mapped_column(Date, nullable=False)
-    position: Mapped[str] = mapped_column(String(50), nullable=False, quote=True)
+    # Исправлено: явно указано имя столбца "position"
+    position: Mapped[str] = mapped_column("position", String(50), nullable=False, quote=True)
     team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"), nullable=False)
     
     team: Mapped["Team"] = relationship(back_populates="athletes")

@@ -44,3 +44,11 @@ class Database:
             from .models import Base
             async with self.engine.begin() as conn:
                 await conn.run_sync(Base.metadata.create_all)
+
+    async def drop_all(self):
+            if not self.engine:
+                raise Exception("Database is not connected")
+            from .models import Base
+            async with self.engine.begin() as conn:
+                await conn.run_sync(Base.metadata.drop_all)
+            logger.info("All tables dropped")

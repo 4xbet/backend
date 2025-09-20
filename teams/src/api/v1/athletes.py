@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from ...db.repositories import AthleteRepository
+from ...db.repositories import AthleteRepository, TeamRepository # Добавлено TeamRepository
 from ..schemas.athletes import AthleteCreate, AthleteResponse, AthleteUpdate
 from ...db.models import Athlete
 
@@ -24,6 +24,13 @@ async def get_athlete(athlete_id: int):
 @router.post("/", response_model=AthleteResponse, status_code=status.HTTP_201_CREATED)
 async def create_athlete(athlete: AthleteCreate):
     """Create a new athlete."""
+    team = await TeamRepository.get(athlete.team_id)
+    if not team:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Team with ID {athlete.team_id} not found"
+        )
+
     athlete_data = Athlete(
         first_name=athlete.first_name,
         last_name=athlete.last_name,
@@ -44,6 +51,14 @@ async def update_athlete(athlete_id: int, athlete: AthleteUpdate):
         )
     
     update_data = athlete.model_dump(exclude_unset=True)
+    if "team_id" in update_data:
+        team_id_to_check = update_data["team_id"]
+        team = await TeamRepository.get(team_id_to_check)
+        if not team:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Team with ID {team_id_to_check} not found"
+            )
     
     updated_athlete = Athlete(
         id=athlete_id,
