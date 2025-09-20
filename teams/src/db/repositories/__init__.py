@@ -1,6 +1,6 @@
-from .base import BaseRepository
+from .team_repository import TeamRepository
+from .athlete_repository import AthleteRepository
 from ...db import db
-from ..models import Athlete, Team
 
-AthleteRepository = BaseRepository(db, Athlete)
-TeamRepository = BaseRepository(db, Team)
+TeamRepository = TeamRepository(db)
+AthleteRepository = AthleteRepository(db)
