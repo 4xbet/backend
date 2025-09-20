@@ -4,7 +4,18 @@ from config import settings
 from src.services import logger
 
 class Database:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Database, cls).__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+
     def __init__(self):
+        if self._initialized:
+            return
+        
         self.POSTGRES = {
             "user": settings.POSTGRES_USER,
             "password": settings.POSTGRES_PASSWORD,
@@ -13,6 +24,8 @@ class Database:
             "db": settings.POSTGRES_DB
         }
         self.engine = None
+        self.async_session = None
+        self._initialized = True
 
     @private
     def get_url(self):
@@ -20,12 +33,15 @@ class Database:
 
     async def connect(self):
         logger.info("Connecting to database...")
-        self.engine = create_async_engine(self.get_url())
-        self.async_session = async_sessionmaker(
-                self.engine,
-                class_=AsyncSession,
-                expire_on_commit=False
-            )
+        if self.engine is None:
+            self.engine = create_async_engine(self.get_url())
+            self.async_session = async_sessionmaker(
+                    self.engine,
+                    class_=AsyncSession,
+                    expire_on_commit=False
+                )
+        else:
+            logger.info("Database engine already connected.")
 
     async def close(self):
         if not self.engine:
