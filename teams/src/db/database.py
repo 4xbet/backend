@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from accessify import private
-from config import settings
+from config import settings 
 from src.services import logger
 
 class Database:
