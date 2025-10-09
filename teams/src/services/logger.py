@@ -5,8 +5,6 @@ class LoggerService:
         self.log_to_file = log_to_file
         self.log_file_path = log_file_path
         self.console_strategy = ConsoleLoggingStrategy()
-        # You might want to add a file logging strategy here too
-        # For simplicity, I'll just use the console strategy and a basic file write for now.
 
     def info(self, message: str):
         self.console_strategy.log_info(message)
@@ -26,5 +24,4 @@ class LoggerService:
             with open(self.log_file_path, 'a') as f:
                 f.write(f"ERROR: {message}\n")
 
-# Instantiate the logger here, making it a singleton-like instance
 logger = LoggerService(log_to_file=True, log_file_path='app.log')

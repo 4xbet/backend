@@ -53,9 +53,9 @@ async def create_athlete(
 @router.put("/{athlete_id}", response_model=AthleteResponse)
 async def update_athlete(
     athlete_id: int,
-    athlete_update: AthleteUpdate, # Используем AthleteUpdate для частичного обновления
-    athlete_repo: AthleteRepository = Depends(get_athlete_repository), # Внедрение зависимости
-    team_repo: TeamRepository = Depends(get_team_repository) # Внедрение зависимости для проверки команды
+    athlete_update: AthleteUpdate,
+    athlete_repo: AthleteRepository = Depends(get_athlete_repository),
+    team_repo: TeamRepository = Depends(get_team_repository)
 ):
     """Update an athlete by ID."""
     existing_athlete = await athlete_repo.get(athlete_id)
@@ -67,7 +67,7 @@ async def update_athlete(
     
     update_data = athlete_update.model_dump(exclude_unset=True)
     
-    # Проверка существования команды, если team_id обновляется
+
     if "team_id" in update_data:
         team_id_to_check = update_data["team_id"]
         team = await team_repo.get(team_id_to_check)
@@ -76,17 +76,16 @@ async def update_athlete(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Team with ID {team_id_to_check} not found"
             )
-    
-    # Обновляем атрибуты существующего объекта напрямую
+
     for key, value in update_data.items():
         setattr(existing_athlete, key, value)
     
-    return await athlete_repo.update(athlete_id, existing_athlete) # Передаем обновленный объект
+    return await athlete_repo.update(athlete_id, existing_athlete)
 
 @router.delete("/{athlete_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_athlete(
     athlete_id: int,
-    athlete_repo: AthleteRepository = Depends(get_athlete_repository) # Внедрение зависимости
+    athlete_repo: AthleteRepository = Depends(get_athlete_repository)
 ):
     """Delete an athlete by ID."""
     existing_athlete = await athlete_repo.get(athlete_id)
