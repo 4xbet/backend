@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from src.db import db
-from src.api.v1 import teams, athletes
+from src.api.v1 import teams, athletes, patterns_demo
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from src.services.error_handlers import ErrorHandlerChain
@@ -24,6 +24,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 app.include_router(teams.router)
 app.include_router(athletes.router)
+app.include_router(patterns_demo.router)
 
 app.add_middleware(
     CORSMiddleware,

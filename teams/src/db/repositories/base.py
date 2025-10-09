@@ -27,6 +27,14 @@ class BaseRepository(ABC, Generic[T]):
                 select(self.get_model()).limit(limit).offset(offset)
             )
             return list(result.scalars().all())
+    
+    async def list_all(self) -> List[T]:
+        """Получить все записи без ограничений по лимиту"""
+        async with self.database.get_session() as session:
+            result = await session.execute(
+                select(self.get_model())
+            )
+            return list(result.scalars().all())
 
     async def create(self, entity: T) -> T:
         async with self.database.get_session() as session:

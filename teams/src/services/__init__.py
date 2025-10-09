@@ -1,9 +1,15 @@
 from .logger import LoggerService
-import logging
+from .logger_strategies import LoggingStrategy, ConsoleLoggingStrategy
+from .error_handlers import ErrorHandlerChain
+from .team_service import TeamServiceFacade
 
-logger = LoggerService(
-        log_level=logging.DEBUG,
-        log_to_console=True,
-        log_to_file=True,
-        log_file_path="app.log"
-)
+logger = LoggerService(log_to_file=True, log_file_path='app.log')
+
+__all__ = [
+    "logger",
+    "LoggerService", 
+    "LoggingStrategy", 
+    "ConsoleLoggingStrategy",
+    "ErrorHandlerChain",
+    "TeamServiceFacade"
+]
