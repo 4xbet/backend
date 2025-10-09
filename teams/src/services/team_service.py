@@ -56,7 +56,7 @@ class TeamServiceFacade:
         if not team:
             return None
         
-        all_athletes = await self._athlete_repo.list()
+        all_athletes = await self._athlete_repo.list_all()
         team_athletes = [a for a in all_athletes if a.team_id == team_id]
         
         return {
@@ -89,7 +89,7 @@ class TeamServiceFacade:
         if not team:
             return False
         
-        all_athletes = await self._athlete_repo.list()
+        all_athletes = await self._athlete_repo.list_all()
         team_athletes = [a for a in all_athletes if a.team_id == team_id]
         
         for athlete in team_athletes:
@@ -100,8 +100,8 @@ class TeamServiceFacade:
     
     async def get_teams_statistics(self) -> dict:
         """Получение статистики по всем командам"""
-        teams = await self._team_repo.list()
-        all_athletes = await self._athlete_repo.list()
+        teams = await self._team_repo.list_all()
+        all_athletes = await self._athlete_repo.list_all()
         
         stats = {
             "total_teams": len(teams),

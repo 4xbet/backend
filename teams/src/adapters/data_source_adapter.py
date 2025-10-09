@@ -33,7 +33,7 @@ class DatabaseDataSource(IDataSource):
     
     async def get_teams(self) -> List[Dict[str, Any]]:
         """Получить команды из базы данных"""
-        teams = await self._team_repo.list()
+        teams = await self._team_repo.list_all()
         return [self._team_to_dict(team) for team in teams]
     
     async def get_team_by_id(self, team_id: int) -> Optional[Dict[str, Any]]:

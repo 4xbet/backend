@@ -69,6 +69,23 @@ class RepositoryLoggingDecorator(BaseRepository[T]):
         
         return result
     
+    async def list_all(self) -> List[T]:
+        """Декорированный метод получения всех сущностей без лимита"""
+        self._operation_count += 1
+        
+        if self._log_operations:
+            model_name = self.get_model().__name__
+            logger.info(f"[DECORATOR] List_all operation #{self._operation_count}: {model_name} (no limit)")
+        
+        start_time = datetime.now()
+        result = await self._repository.list_all()
+        execution_time = (datetime.now() - start_time).total_seconds()
+        
+        if self._log_operations:
+            logger.info(f"[DECORATOR] List_all operation completed: {len(result)} items in {execution_time:.3f}s")
+        
+        return result
+    
     async def create(self, entity: T) -> T:
         """Декорированный метод создания сущности"""
         self._operation_count += 1
