@@ -1,15 +1,13 @@
-from .logger import LoggerService
+from .logger import LoggerService, logger
 from .logger_strategies import LoggingStrategy, ConsoleLoggingStrategy
 from .error_handlers import ErrorHandlerChain
-from .team_service import TeamServiceFacade
-
-logger = LoggerService(log_to_file=True, log_file_path='app.log')
+# from .team_service import TeamServiceFacade # Removed to break circular dependency
 
 __all__ = [
     "logger",
-    "LoggerService", 
-    "LoggingStrategy", 
+    "LoggerService",
+    "LoggingStrategy",
     "ConsoleLoggingStrategy",
     "ErrorHandlerChain",
-    "TeamServiceFacade"
+    # "TeamServiceFacade" # Removed from __all__ as well
 ]

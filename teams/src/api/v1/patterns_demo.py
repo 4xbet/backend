@@ -8,7 +8,7 @@ from ...db.repositories import (
     team_repository_with_logging,
     athlete_repository_with_logging
 )
-from ...services import TeamServiceFacade
+from ...services.team_service import TeamServiceFacade # Changed import path
 from ...adapters import DataSourceAdapter, DatabaseDataSource, ExternalAPIDataSource
 from ..schemas.teams import TeamCreate
 from ..schemas.athletes import AthleteCreate

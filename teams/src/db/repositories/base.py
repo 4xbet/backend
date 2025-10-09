@@ -38,6 +38,12 @@ class BaseRepository(ABC, Generic[T]):
 
     async def create(self, entity: T) -> T:
         async with self.database.get_session() as session:
+            entity_id = getattr(entity, 'id', None)
+            if entity_id is not None:
+                existing_entity = await session.get(self.get_model(), entity_id)
+                if existing_entity:
+                    raise ValueError(f"Entity with id {entity_id} already exists")
+                    
             session.add(entity)
             await session.commit()
             await session.refresh(entity)

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional, Dict, Any
 from ..db.models import Team, Athlete
 from ..db.repositories import TeamRepository, AthleteRepository
-from ...services import logger
+from ..services.logger import logger # Corrected import path
 
 
 class IDataSource(ABC):
