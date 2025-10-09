@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
       POSTGRES_HOST: teams-db
-      POSTGRES_PORT: 5432
+      POSTGRES_PORT: 5433  
       POSTGRES_DB: test
     depends_on:
       - teams-db
@@ -22,10 +22,14 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: test
+    command: postgres -p 5433 
+    ports:
+      - "5433:5433"  
     volumes:
       - teams_db_data:/var/lib/postgresql/data
     networks:
       - backend-network
+
 
 volumes:
   teams_db_data:

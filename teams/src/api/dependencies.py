@@ -7,4 +7,4 @@ def get_team_repository() -> TeamRepository:
 
 def get_athlete_repository() -> AthleteRepository:
     """Dependency to get the AthleteRepository instance."""
-    return athlete_repository_instance
+    return athlete_repository_instance 

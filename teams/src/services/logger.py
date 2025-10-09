@@ -1,10 +1,12 @@
 import logging
 import logging.handlers
-from typing import Optional
+from typing import Optional, Dict, Any
+from .logger_strategies import LoggingStrategy, ConsoleLoggingStrategy
 
 class LoggerService:
     def __init__(
         self,
+        strategy: LoggingStrategy = None,
         log_level: int = logging.INFO,
         log_to_console: bool = True,
         log_to_file: bool = False,
@@ -12,9 +14,10 @@ class LoggerService:
         max_file_size: int = 10 * 1024 * 1024,
         backup_count: int = 5
     ):
+        self.strategy = strategy or ConsoleLoggingStrategy()
+        
         self.logger = logging.getLogger()
         self.logger.setLevel(log_level)
-
         self.logger.handlers.clear()
 
         formatter = logging.Formatter(
@@ -39,21 +42,30 @@ class LoggerService:
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
 
-    def debug(self, message: str):
+    def set_strategy(self, strategy: LoggingStrategy):
+        """Смена стратегии логирования"""
+        self.strategy = strategy
+
+    def debug(self, message: str, extra: Dict[str, Any] = None):
+        self.strategy.log('debug', message, extra)
         self.logger.debug(message)
 
-    def info(self, message: str):
+    def info(self, message: str, extra: Dict[str, Any] = None):
+        self.strategy.log('info', message, extra)
         self.logger.info(message)
 
-    def warning(self, message: str):
+    def warning(self, message: str, extra: Dict[str, Any] = None):
+        self.strategy.log('warning', message, extra)
         self.logger.warning(message)
 
-    def error(self, message: str):
+    def error(self, message: str, extra: Dict[str, Any] = None):
+        self.strategy.log('error', message, extra)
         self.logger.error(message)
 
-    def critical(self, message: str):
+    def critical(self, message: str, extra: Dict[str, Any] = None):
+        self.strategy.log('critical', message, extra)
         self.logger.critical(message)
 
-    def exception(self, message: str):
+    def exception(self, message: str, extra: Dict[str, Any] = None):
+        self.strategy.log('error', message, extra)
         self.logger.exception(message)
-
