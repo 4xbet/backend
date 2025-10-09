@@ -4,7 +4,7 @@ from src.db import db
 from src.api.v1 import teams, athletes
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
-from services.error_handlers import ErrorHandlerChain
+from src.services.error_handlers import ErrorHandlerChain
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
