@@ -1,10 +1,20 @@
+from typing import AsyncGenerator
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from ..db.repositories import TeamRepository, AthleteRepository
-from ..db.repositories import team_repository_instance, athlete_repository_instance
+from ..db.database import Database
 
-def get_team_repository() -> TeamRepository:
+db = Database()
+
+async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
+    """Dependency to get a database session."""
+    async with db.get_session() as session:
+        yield session
+
+def get_team_repository(session: AsyncSession = Depends(get_db_session)) -> TeamRepository:
     """Dependency to get the TeamRepository instance."""
-    return team_repository_instance
+    return TeamRepository(session)
 
-def get_athlete_repository() -> AthleteRepository:
+def get_athlete_repository(session: AsyncSession = Depends(get_db_session)) -> AthleteRepository:
     """Dependency to get the AthleteRepository instance."""
-    return athlete_repository_instance 
+    return AthleteRepository(session)

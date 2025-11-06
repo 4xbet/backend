@@ -1,9 +1,9 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import date
 from ..db.repositories import TeamRepository, AthleteRepository
 from ..db.models import Team, Athlete
-from ..api.schemas.teams import TeamCreate, TeamUpdate
-from ..api.schemas.athletes import AthleteCreate, AthleteUpdate
+from ..api.schemas.teams import TeamCreate
+from ..api.schemas.athletes import AthleteCreate
 
 
 class TeamServiceFacade:
@@ -25,25 +25,27 @@ class TeamServiceFacade:
     
     async def create_team_with_athletes(
         self, 
-        team_data: TeamCreate, 
-        athletes_data: List[AthleteCreate]
+        team_data: Dict[str, Any],
+        athletes_data: List[Dict[str, Any]]
     ) -> Team:
         """Создание команды вместе с атлетами за одну операцию"""
+        team_create = TeamCreate(**team_data)
         team = Team(
-            name=team_data.name,
-            country=team_data.country,
-            city=team_data.city,
-            founded_year=team_data.founded_year,
-            logo_url=team_data.logo_url
+            name=team_create.name,
+            country=team_create.country,
+            city=team_create.city,
+            founded_year=team_create.founded_year,
+            logo_url=team_create.logo_url
         )
         created_team = await self._team_repo.create(team)
         
         for athlete_data in athletes_data:
+            athlete_create = AthleteCreate(**athlete_data)
             athlete = Athlete(
-                first_name=athlete_data.first_name,
-                last_name=athlete_data.last_name,
-                date_of_birth=athlete_data.date_of_birth,
-                position=athlete_data.position,
+                first_name=athlete_create.first_name,
+                last_name=athlete_create.last_name,
+                date_of_birth=athlete_create.date_of_birth,
+                position=athlete_create.position,
                 team_id=created_team.id
             )
             await self._athlete_repo.create(athlete)
