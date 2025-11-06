@@ -11,7 +11,6 @@ class BaseRepository(ABC, Generic[T]):
 
     @abstractmethod
     def get_model(self) -> Type[T]:
-        """Должен вернуть модель SQLAlchemy (например, Team или Athlete)."""
         pass
 
     async def get(self, id: int) -> Optional[T]:
@@ -27,7 +26,6 @@ class BaseRepository(ABC, Generic[T]):
         return list(result.scalars().all())
     
     async def list_all(self) -> List[T]:
-        """Получить все записи без ограничений по лимиту"""
         result = await self.session.execute(
             select(self.get_model())
         )

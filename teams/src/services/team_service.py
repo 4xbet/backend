@@ -7,18 +7,6 @@ from ..api.schemas.athletes import AthleteCreate
 
 
 class TeamServiceFacade:
-    """
-    ПАТТЕРН: FACADE (Фасад)
-    
-    Предоставляет упрощенный интерфейс к сложной подсистеме работы с командами и атлетами.
-    Скрывает сложность взаимодействия между несколькими репозиториями и бизнес-логикой.
-    
-    Преимущества:
-    - Упрощает использование подсистемы для клиентского кода
-    - Снижает связанность между клиентом и сложной системой
-    - Централизует бизнес-логику в одном месте
-    """
-    
     def __init__(self, team_repo: TeamRepository, athlete_repo: AthleteRepository):
         self._team_repo = team_repo
         self._athlete_repo = athlete_repo
@@ -28,7 +16,6 @@ class TeamServiceFacade:
         team_data: Dict[str, Any],
         athletes_data: List[Dict[str, Any]]
     ) -> Team:
-        """Создание команды вместе с атлетами за одну операцию"""
         team_create = TeamCreate(**team_data)
         team = Team(
             name=team_create.name,
@@ -53,7 +40,6 @@ class TeamServiceFacade:
         return await self._team_repo.get(created_team.id)
     
     async def get_team_full_info(self, team_id: int) -> Optional[dict]:
-        """Получение полной информации о команде включая всех атлетов"""
         team = await self._team_repo.get(team_id)
         if not team:
             return None
@@ -73,7 +59,6 @@ class TeamServiceFacade:
         athlete_id: int, 
         new_team_id: int
     ) -> Optional[Athlete]:
-        """Перевод атлета в другую команду"""
         athlete = await self._athlete_repo.get(athlete_id)
         if not athlete:
             return None
@@ -86,7 +71,6 @@ class TeamServiceFacade:
         return await self._athlete_repo.update(athlete_id, athlete)
     
     async def delete_team_cascade(self, team_id: int) -> bool:
-        """Удаление команды вместе со всеми атлетами"""
         team = await self._team_repo.get(team_id)
         if not team:
             return False
@@ -101,7 +85,6 @@ class TeamServiceFacade:
         return True
     
     async def get_teams_statistics(self) -> dict:
-        """Получение статистики по всем командам"""
         teams = await self._team_repo.list_all()
         all_athletes = await self._athlete_repo.list_all()
         
@@ -130,7 +113,6 @@ class TeamServiceFacade:
         return stats
     
     def _calculate_average_age(self, athletes: List[Athlete]) -> Optional[float]:
-        """Вспомогательный метод для расчета среднего возраста"""
         if not athletes:
             return None
         
