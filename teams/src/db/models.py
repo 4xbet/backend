@@ -15,6 +15,9 @@ class Team(Base):
     
     athletes: Mapped[list["Athlete"]] = relationship(back_populates="team", cascade="all, delete-orphan")
 
+    def __repr__(self):
+        return f"<Team(id={self.id}, name='{self.name}', country='{self.country}')>"
+
 class Athlete(Base):
     __tablename__ = "athletes"
     
@@ -27,3 +30,11 @@ class Athlete(Base):
     team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"), nullable=False)
     
     team: Mapped["Team"] = relationship(back_populates="athletes")
+
+    @property
+    def name(self):
+        """Full name property."""
+        return f"{self.first_name} {self.last_name}"
+
+    def __repr__(self):
+        return f"<Athlete(id={self.id}, name='{self.name}', position='{self.position}')>"

@@ -9,7 +9,7 @@ class AthleteBase(BaseModel):
     position: Optional[str] = None
 
 class AthleteCreate(AthleteBase):
-    team_id: int
+    team_id: Optional[int] = None
 
 class AthleteUpdate(BaseModel):
     first_name: Optional[str] = Field(None, min_length=1, max_length=50)
