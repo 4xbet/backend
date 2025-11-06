@@ -6,10 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 from sqlalchemy.pool import StaticPool
 
 from main import app
-from src.db.models import Base, Team, Athlete
-from src.services.team_service import TeamServiceFacade
-from src.db.repositories import TeamRepository, AthleteRepository
-from src.api.dependencies import get_team_repository, get_athlete_repository
+from src.db.models import Base, Team
+from src.api.dependencies import get_db_session
 
 
 @pytest.fixture(scope="session")
@@ -62,34 +60,18 @@ async def test_db(test_engine, test_sessionmaker) -> AsyncGenerator[AsyncSession
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture
-def team_repository(test_db):
-    """Create a team repository instance."""
-    return TeamRepository(test_db)
-
-
-@pytest.fixture
-def athlete_repository(test_db):
-    """Create an athlete repository instance."""
-    return AthleteRepository(test_db)
-
-
 @pytest.fixture(scope="function")
-async def async_client(team_repository: TeamRepository, athlete_repository: AthleteRepository) -> AsyncGenerator[AsyncClient, None]:
+async def async_client(test_db: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """
     Provide a test client that overrides the repository dependencies
     to use instances created with the isolated test database.
     """
     
-    def override_get_team_repository() -> TeamRepository:
-        return team_repository
-
-    def override_get_athlete_repository() -> AthleteRepository:
-        return athlete_repository
+    async def override_get_db_session() -> AsyncGenerator[AsyncSession, None]:
+        yield test_db
 
     # Apply the overrides for the repository dependencies
-    app.dependency_overrides[get_team_repository] = override_get_team_repository
-    app.dependency_overrides[get_athlete_repository] = override_get_athlete_repository
+    app.dependency_overrides[get_db_session] = override_get_db_session
 
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
