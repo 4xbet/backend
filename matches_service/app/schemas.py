@@ -29,7 +29,7 @@ class Odds(OddsBase):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Match(MatchBase):
@@ -39,4 +39,4 @@ class Match(MatchBase):
     odds: Optional[Odds]
 
     class Config:
-        orm_mode = True
+        from_attributes = True

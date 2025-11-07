@@ -7,3 +7,5 @@ python-jose[cryptography]
 pydantic[email]
 pydantic-settings
 asyncpg
+
+python-multipart

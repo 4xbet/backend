@@ -2,20 +2,23 @@
 FROM python:3.12-alpine3.20
 
 # Install uv
-RUN pip install uv
+RUN pip install --no-cache-dir pip
 
 # Set the working directory to /app
-WORKDIR /app
+WORKDIR /app_root
 
-# Copy the current directory contents into the container at /app
-COPY ./app /app
+# Copy the application code and requirements
+COPY ./app /app_root/app
+COPY requirements.txt /app_root/
+
+# Set the working directory for subsequent commands
+WORKDIR /app_root
 
 # Install any needed packages specified in requirements.txt
-COPY requirements.txt .
-RUN uv pip install --system --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Make port 80 available to the world outside this container
 EXPOSE 80
 
 # Run main.py when the container launches
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]

@@ -16,7 +16,7 @@ class UserInDB(UserBase):
     hashed_password: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class User(UserBase):
@@ -24,7 +24,7 @@ class User(UserBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Wallet(BaseModel):
@@ -34,4 +34,4 @@ class Wallet(BaseModel):
     currency: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True

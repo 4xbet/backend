@@ -1,15 +1,14 @@
-version: "3.8"
-
 services:
   user_service:
     build: ./user_service
     ports:
-      - "8001:80"
+      - '8001:80'
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@user_db/user_db
       - SECRET_KEY=your_secret_key
     depends_on:
-      - user_db
+      user_db:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -19,20 +18,24 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=user_db
-    volumes:
-      - user_db_data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d user_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   teams_service:
     build: ./teams_service
     ports:
-      - "8002:80"
+      - '8002:80'
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@teams_db/teams_db
       - SECRET_KEY=your_secret_key
     depends_on:
-      - teams_db
+      teams_db:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -42,20 +45,24 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=teams_db
-    volumes:
-      - teams_db_data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d teams_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   matches_service:
     build: ./matches_service
     ports:
-      - "8003:80"
+      - '8003:80'
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@matches_db/matches_db
       - SECRET_KEY=your_secret_key
     depends_on:
-      - matches_db
+      matches_db:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -65,22 +72,27 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=matches_db
-    volumes:
-      - matches_db_data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d matches_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   bets_service:
     build: ./bets_service
     ports:
-      - "8004:80"
+      - '8004:80'
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@bets_db/bets_db
       - SECRET_KEY=your_secret_key
       - USER_SERVICE_URL=http://user_service:80
     depends_on:
-      - bets_db
-      - user_service
+      bets_db:
+        condition: service_healthy
+      user_service:
+        condition: service_started
     networks:
       - app-network
 
@@ -90,28 +102,29 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=bets_db
-    volumes:
-      - bets_db_data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d bets_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   api_gateway:
     build: ./api_gateway
     ports:
-      - "8000:80"
+      - '8000:80'
     depends_on:
-      - user_service
-      - teams_service
-      - matches_service
-      - bets_service
+      user_service:
+        condition: service_started
+      teams_service:
+        condition: service_started
+      matches_service:
+        condition: service_started
+      bets_service:
+        condition: service_started
     networks:
       - app-network
-
-volumes:
-  user_db_data:
-  teams_db_data:
-  matches_db_data:
-  bets_db_data:
 
 networks:
   app-network:

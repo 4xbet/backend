@@ -6,3 +6,5 @@ pydantic-settings
 asyncpg
 python-jose[cryptography]
 httpx
+
+passlib[bcrypt]
