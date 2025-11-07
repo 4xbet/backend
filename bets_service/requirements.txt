@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic-settings
+asyncpg
+python-jose[cryptography]
+httpx
+fastapi-jwt-auth
+fastapi-cors
+passlib[bcrypt]

@@ -1,39 +1,136 @@
 services:
-  teams:
-    build:
-      context: ./teams
-      dockerfile: Dockerfile
+  user_service:
+    build: ./user_service
     ports:
-      - "8080:8080"
+      - '8001:80'
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_HOST: teams-db
-      POSTGRES_PORT: 5433  
-      POSTGRES_DB: test
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@user_db/user_db
+      - SECRET_KEY=your_secret_key
+      - ROOT_PATH=/api/users
     depends_on:
-      - teams-db
+      user_db:
+        condition: service_healthy
     networks:
-      - backend-network
+      - app-network
 
-  teams-db:
-    image: postgres:16-alpine
+  user_db:
+    image: postgres:17-alpine
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: test
-    command: postgres -p 5433 
-    ports:
-      - "5433:5433"  
-    volumes:
-      - teams_db_data:/var/lib/postgresql/data
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=user_db
     networks:
-      - backend-network
+      - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d user_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
+  teams_service:
+    build: ./teams_service
+    ports:
+      - '8002:80'
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@teams_db/teams_db
+      - SECRET_KEY=your_secret_key
+      - ROOT_PATH=/api/teams
+    depends_on:
+      teams_db:
+        condition: service_healthy
+    networks:
+      - app-network
 
-volumes:
-  teams_db_data:
+  teams_db:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=teams_db
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d teams_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  matches_service:
+    build: ./matches_service
+    ports:
+      - '8003:80'
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@matches_db/matches_db
+      - SECRET_KEY=your_secret_key
+      - ROOT_PATH=/api/matches
+    depends_on:
+      matches_db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  matches_db:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=matches_db
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d matches_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  bets_service:
+    build: ./bets_service
+    ports:
+      - '8004:80'
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@bets_db/bets_db
+      - SECRET_KEY=your_secret_key
+      - USER_SERVICE_URL=http://user_service:80
+      - MATCHES_SERVICE_URL=http://matches_service:80
+      - ROOT_PATH=/api/bets
+    depends_on:
+      bets_db:
+        condition: service_healthy
+      user_service:
+        condition: service_started
+    networks:
+      - app-network
+
+  bets_db:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=bets_db
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d bets_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api_gateway:
+    build: ./api_gateway
+    ports:
+      - '8000:80'
+    depends_on:
+      user_service:
+        condition: service_started
+      teams_service:
+        condition: service_started
+      matches_service:
+        condition: service_started
+      bets_service:
+        condition: service_started
+    networks:
+      - app-network
 
 networks:
-  backend-network:
+  app-network:
     driver: bridge
