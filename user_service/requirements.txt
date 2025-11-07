@@ -7,5 +7,6 @@ python-jose[cryptography]
 pydantic[email]
 pydantic-settings
 asyncpg
-
+fastapi-jwt-auth
+fastapi-cors
 python-multipart

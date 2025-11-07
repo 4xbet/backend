@@ -1,15 +1,37 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from . import crud, models, schemas, auth
 from .database import get_db, engine
+import os
+import logging
 
-app = FastAPI()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+ROOT_PATH = os.getenv("ROOT_PATH", "")
+app = FastAPI(root_path=ROOT_PATH)
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    max_age=600,
+)
+
 router = APIRouter()
 
 
 @app.on_event("startup")
 async def startup():
+    logger.info(f"FastAPI app starting with ROOT_PATH: {ROOT_PATH}")
     async with engine.begin() as conn:
         await conn.run_sync(models.Base.metadata.create_all)
 
