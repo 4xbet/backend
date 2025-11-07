@@ -1,39 +1,118 @@
-services:
-  teams:
-    build:
-      context: ./teams
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_HOST: teams-db
-      POSTGRES_PORT: 5433  
-      POSTGRES_DB: test
-    depends_on:
-      - teams-db
-    networks:
-      - backend-network
+version: "3.8"
 
-  teams-db:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: test
-    command: postgres -p 5433 
+services:
+  user_service:
+    build: ./user_service
     ports:
-      - "5433:5433"  
+      - "8001:80"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@user_db/user_db
+      - SECRET_KEY=your_secret_key
+    depends_on:
+      - user_db
+    networks:
+      - app-network
+
+  user_db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=user_db
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  teams_service:
+    build: ./teams_service
+    ports:
+      - "8002:80"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@teams_db/teams_db
+      - SECRET_KEY=your_secret_key
+    depends_on:
+      - teams_db
+    networks:
+      - app-network
+
+  teams_db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=teams_db
     volumes:
       - teams_db_data:/var/lib/postgresql/data
     networks:
-      - backend-network
+      - app-network
 
+  matches_service:
+    build: ./matches_service
+    ports:
+      - "8003:80"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@matches_db/matches_db
+      - SECRET_KEY=your_secret_key
+    depends_on:
+      - matches_db
+    networks:
+      - app-network
+
+  matches_db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=matches_db
+    volumes:
+      - matches_db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  bets_service:
+    build: ./bets_service
+    ports:
+      - "8004:80"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@bets_db/bets_db
+      - SECRET_KEY=your_secret_key
+      - USER_SERVICE_URL=http://user_service:80
+    depends_on:
+      - bets_db
+      - user_service
+    networks:
+      - app-network
+
+  bets_db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=bets_db
+    volumes:
+      - bets_db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  api_gateway:
+    build: ./api_gateway
+    ports:
+      - "80:80"
+    depends_on:
+      - user_service
+      - teams_service
+      - matches_service
+      - bets_service
+    networks:
+      - app-network
 
 volumes:
+  user_db_data:
   teams_db_data:
+  matches_db_data:
+  bets_db_data:
 
 networks:
-  backend-network:
+  app-network:
     driver: bridge
