@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from . import crud, models, schemas, auth
@@ -7,6 +7,7 @@ import httpx
 import os
 
 app = FastAPI()
+router = APIRouter()
 
 MATCHES_SERVICE_URL = os.getenv("MATCHES_SERVICE_URL", "http://matches_service:80")
 USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://user_service:80")
@@ -18,17 +19,23 @@ async def startup():
         await conn.run_sync(models.Base.metadata.create_all)
 
 
-@app.post("/bets/", response_model=schemas.Bet)
+@router.post("/bets/", response_model=schemas.Bet)
 async def create_bet(
     bet: schemas.BetCreate,
     db: AsyncSession = Depends(get_db),
     current_user: auth.User = Depends(auth.get_current_user),
 ):
-    # Verify user balance
-    if not await crud.verify_user_balance(
-        current_user.id, bet.amount_staked, current_user.token
-    ):
-        raise HTTPException(status_code=400, detail="Insufficient funds")
+    # Verify user balance and get wallet
+    async with httpx.AsyncClient() as client:
+        headers = {"Authorization": f"Bearer {current_user.token}"}
+        response = await client.get(
+            f"{USER_SERVICE_URL}/users/me/wallet", headers=headers
+        )
+        if response.status_code != 200:
+            raise HTTPException(status_code=400, detail="Could not retrieve wallet")
+        wallet = response.json()
+        if wallet["balance"] < bet.amount_staked:
+            raise HTTPException(status_code=400, detail="Insufficient funds")
 
     # Get odds from matches_service
     async with httpx.AsyncClient() as client:
@@ -61,7 +68,7 @@ async def create_bet(
 
     # Create transaction
     transaction = schemas.TransactionCreate(
-        wallet_id=current_user.id,  # Assuming wallet_id is the same as user_id
+        wallet_id=wallet["id"],
         amount=-bet.amount_staked,
         type="bet_placed",
         related_bet_id=db_bet.id,
@@ -71,9 +78,17 @@ async def create_bet(
     return db_bet
 
 
-@app.get("/bets/", response_model=List[schemas.Bet])
+@router.get("/bets/", response_model=List[schemas.Bet])
 async def read_bets(
     db: AsyncSession = Depends(get_db),
     current_user: auth.User = Depends(auth.get_current_user),
 ):
     return await crud.get_bets_by_user(db=db, user_id=current_user.id)
+
+
+@app.get("/")
+async def health_check():
+    return {"status": "ok"}
+
+
+app.include_router(router)

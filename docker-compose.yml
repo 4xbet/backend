@@ -98,7 +98,7 @@ services:
   api_gateway:
     build: ./api_gateway
     ports:
-      - "80:80"
+      - "8000:80"
     depends_on:
       - user_service
       - teams_service

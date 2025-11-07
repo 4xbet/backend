@@ -1,13 +1,12 @@
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 from . import crud, models, schemas, auth
 from .database import get_db, engine
 
 app = FastAPI()
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+router = APIRouter()
 
 
 class BalanceUpdate(BaseModel):
@@ -20,7 +19,7 @@ async def startup():
         await conn.run_sync(models.Base.metadata.create_all)
 
 
-@app.post("/users/", response_model=schemas.User)
+@router.post("/users/", response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     db_user = await crud.get_user_by_email(db, email=user.email)
     if db_user:
@@ -28,7 +27,7 @@ async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_d
     return await crud.create_user(db=db, user=user)
 
 
-@app.post("/token")
+@router.post("/token")
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ):
@@ -49,17 +48,21 @@ async def get_current_user(user: auth.User = Depends(auth.get_current_user)):
     return user
 
 
-@app.get("/users/me", response_model=schemas.User)
+@router.get("/users/me", response_model=schemas.User)
 async def read_users_me(current_user: models.User = Depends(get_current_user)):
     return current_user
 
 
-@app.get("/users/me/wallet", response_model=schemas.Wallet)
-async def read_user_wallet(current_user: models.User = Depends(get_current_user)):
-    return current_user.wallet
+@router.get("/users/me/wallet", response_model=schemas.Wallet)
+async def read_user_wallet(
+    current_user: models.User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    user = await crud.get_user_by_email(db, email=current_user.email)
+    return user.wallet
 
 
-@app.patch("/users/me/wallet", response_model=schemas.Wallet)
+@router.patch("/users/me/wallet", response_model=schemas.Wallet)
 async def update_user_wallet(
     balance_update: BalanceUpdate,
     current_user: models.User = Depends(get_current_user),
@@ -68,3 +71,11 @@ async def update_user_wallet(
     return await crud.update_wallet_balance(
         db, user_id=current_user.id, amount=balance_update.amount
     )
+
+
+@app.get("/")
+async def health_check():
+    return {"status": "ok"}
+
+
+app.include_router(router)
