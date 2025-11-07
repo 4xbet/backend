@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9-slim-buster
+FROM python:3.12-alpine3.20
 
 # Install uv
 RUN pip install uv

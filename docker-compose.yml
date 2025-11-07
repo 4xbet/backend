@@ -14,7 +14,7 @@ services:
       - app-network
 
   user_db:
-    image: postgres:13
+    image: postgres:17-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -37,7 +37,7 @@ services:
       - app-network
 
   teams_db:
-    image: postgres:13
+    image: postgres:17-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -60,7 +60,7 @@ services:
       - app-network
 
   matches_db:
-    image: postgres:13
+    image: postgres:17-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -85,7 +85,7 @@ services:
       - app-network
 
   bets_db:
-    image: postgres:13
+    image: postgres:17-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
