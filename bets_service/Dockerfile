@@ -12,7 +12,7 @@ COPY ./app /app
 
 # Install any needed packages specified in requirements.txt
 COPY requirements.txt .
-RUN uv pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --system --no-cache-dir -r requirements.txt
 
 # Make port 80 available to the world outside this container
 EXPOSE 80
