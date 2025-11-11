@@ -93,7 +93,7 @@ STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/matches/" \
     -d '{
         "home_team_id": 1,
         "away_team_id": 2,
-        "start_time": "2024-01-01T12:00:00Z"
+        "start_time": "2024-01-01T12:00:00"
     }')
 check_status $STATUS 200
 echo "  [SUCCESS] Match created."
