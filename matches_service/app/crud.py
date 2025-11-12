@@ -25,7 +25,7 @@ async def create_match(db: AsyncSession, match: schemas.MatchCreate):
     db.add(db_match)
     await db.commit()
     await db.refresh(db_match)
-    return db_match
+    return await get_match(db, db_match.id)
 
 
 async def create_match_odds(db: AsyncSession, match_id: int, odds: schemas.OddsCreate):
