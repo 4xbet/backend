@@ -23,7 +23,7 @@ echo "--- Running Endpoint Tests ---"
 # 1. Register a new user
 echo "1. Registering new user..."
 USER_EMAIL="user_${RANDOM_ID}@example.com"
-RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/users/" \
+RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/users/users/" \
     -H "Content-Type: application/json" \
     -d "{
         \"email\": \"${USER_EMAIL}\",
@@ -35,7 +35,7 @@ check_status $STATUS 200
 
 # 2. Login as user and get token
 echo "2. Logging in as user..."
-RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/token" \
+RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/users/token" \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "username=${USER_EMAIL}&password=password")
 STATUS=$(echo "$RESPONSE" | tail -n1)
@@ -51,7 +51,7 @@ echo "  [SUCCESS] User token obtained."
 # 3. Register a new admin
 echo "3. Registering new admin..."
 ADMIN_EMAIL="admin_${RANDOM_ID}@example.com"
-RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/users/" \
+RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/users/users/" \
     -H "Content-Type: application/json" \
     -d "{
         \"email\": \"${ADMIN_EMAIL}\",
@@ -63,7 +63,7 @@ check_status $STATUS 200
 
 # 4. Login as admin and get token
 echo "4. Logging in as admin..."
-RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/token" \
+RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/users/token" \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "username=${ADMIN_EMAIL}&password=adminpassword")
 STATUS=$(echo "$RESPONSE" | tail -n1)
@@ -79,7 +79,7 @@ echo "  [SUCCESS] Admin token obtained."
 # 5. Create a team (admin only)
 echo "5. Creating a team..."
 TEAM_A_NAME="Team A ${RANDOM_ID}"
-RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/teams/" \
+RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/teams/teams/" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $ADMIN_TOKEN" \
     -d "{
@@ -95,7 +95,7 @@ echo "  [SUCCESS] Team created with ID: $TEAM_A_ID"
 # 6. Create another team (admin only)
 echo "6. Creating another team..."
 TEAM_B_NAME="Team B ${RANDOM_ID}"
-RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/teams/" \
+RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/teams/teams/" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $ADMIN_TOKEN" \
     -d "{
@@ -110,7 +110,7 @@ echo "  [SUCCESS] Team created with ID: $TEAM_B_ID"
 
 # 7. Create a match (admin only)
 echo "7. Creating a match..."
-RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/matches/" \
+RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/matches/matches/" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $ADMIN_TOKEN" \
     -d "{
@@ -126,7 +126,7 @@ echo "  [SUCCESS] Match created with ID: $MATCH_ID"
 
 # 8. Create odds for the match (admin only)
 echo "8. Creating odds for the match..."
-RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/matches/${MATCH_ID}/odds" \
+RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/matches/matches/${MATCH_ID}/odds" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $ADMIN_TOKEN" \
     -d '{
@@ -140,7 +140,7 @@ echo "  [SUCCESS] Odds created."
 
 # 9. Update user wallet
 echo "9. Updating user wallet..."
-RESPONSE=$(curl -s -w "\\n%{http_code}" -X PATCH "$BASE_URL/users/me/wallet" \
+RESPONSE=$(curl -s -w "\\n%{http_code}" -X PATCH "$BASE_URL/users/users/me/wallet" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $USER_TOKEN" \
     -d '{
@@ -152,7 +152,7 @@ echo "  [SUCCESS] User wallet updated."
 
 # 10. Place a bet (user)
 echo "10. Placing a bet..."
-RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/bets/" \
+RESPONSE=$(curl -s -w "\\n%{http_code}" -X POST "$BASE_URL/bets/bets/" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $USER_TOKEN" \
     -d "{
