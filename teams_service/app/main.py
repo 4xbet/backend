@@ -46,7 +46,10 @@ def is_admin(user: auth.User = Depends(auth.get_current_user)):
 
 @router.post("/teams/", response_model=schemas.Team, dependencies=[Depends(is_admin)])
 async def create_team(team: schemas.TeamCreate, db: AsyncSession = Depends(get_db)):
-    return await crud.create_team(db=db, team=team)
+    db_team = await crud.create_team(db=db, team=team)
+    if db_team is None:
+        raise HTTPException(status_code=400, detail="Team with this name already exists")
+    return db_team
 
 
 @router.get("/teams/", response_model=List[schemas.Team])
@@ -78,7 +81,10 @@ async def update_team(
     "/teams/{team_id}", response_model=schemas.Team, dependencies=[Depends(is_admin)]
 )
 async def delete_team(team_id: int, db: AsyncSession = Depends(get_db)):
-    return await crud.delete_team(db=db, team_id=team_id)
+    db_team = await crud.delete_team(db=db, team_id=team_id)
+    if db_team is None:
+        raise HTTPException(status_code=404, detail="Team not found")
+    return db_team
 
 
 @app.get("/")

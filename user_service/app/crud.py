@@ -2,6 +2,8 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from . import models, schemas
 from passlib.context import CryptContext
+from sqlalchemy.orm import selectinload
+from decimal import Decimal
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -11,7 +13,11 @@ def get_password_hash(password):
 
 
 async def get_user_by_email(db: AsyncSession, email: str):
-    result = await db.execute(select(models.User).filter(models.User.email == email))
+    result = await db.execute(
+        select(models.User)
+        .options(selectinload(models.User.wallet))
+        .filter(models.User.email == email)
+    )
     return result.scalars().first()
 
 
@@ -37,7 +43,7 @@ async def update_wallet_balance(db: AsyncSession, user_id: int, amount: float):
     result = await db.execute(select(models.Wallet).filter(models.Wallet.user_id == user_id))
     wallet = result.scalars().first()
     if wallet:
-        wallet.balance += amount
+        wallet.balance += Decimal(amount)
         await db.commit()
         await db.refresh(wallet)
     return wallet

@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from datetime import datetime
+from pydantic import BaseModel, field_validator
+from datetime import datetime, timezone
 from typing import Optional
 
 
@@ -7,6 +7,16 @@ class MatchBase(BaseModel):
     home_team_id: int
     away_team_id: int
     start_time: datetime
+
+    @field_validator("start_time", mode="before")
+    def ensure_tz_aware(cls, v):
+        if isinstance(v, str):
+            if v.endswith("Z"):
+                return datetime.fromisoformat(v[:-1] + "+00:00")
+            return datetime.fromisoformat(v)
+        if v.tzinfo is None:
+            return v.replace(tzinfo=timezone.utc)
+        return v
 
 
 class MatchCreate(MatchBase):
