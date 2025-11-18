@@ -1,6 +1,7 @@
 #!/bin/bash
 
 BASE_URL="http://localhost:8000/api"
+RANDOM_ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 JQ_PATH=$(which jq)
 
 if [ -z "$JQ_PATH" ]; then
@@ -21,25 +22,26 @@ echo "--- Running Endpoint Tests ---"
 
 # 1. Register a new user
 echo "1. Registering new user..."
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/users/" \
+USER_EMAIL="user_${RANDOM_ID}@example.com"
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/users/users/" \
     -H "Content-Type: application/json" \
-    -d '{
-        "email": "user@example.com",
-        "password": "password",
-        "role": "user"
-    }')
+    -d "{
+        \"email\": \"${USER_EMAIL}\",
+        \"password\": \"password\",
+        \"role\": \"user\"
+    }")
+STATUS=$(echo "$RESPONSE" | tail -n1)
 check_status $STATUS 200
 
 # 2. Login as user and get token
 echo "2. Logging in as user..."
-RESPONSE=$(curl -s -X POST "$BASE_URL/token" \
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/users/token" \
     -H "Content-Type: application/x-www-form-urlencoded" \
-    -d "username=user@example.com&password=password")
-USER_TOKEN=$(echo $RESPONSE | jq -r '.access_token')
-check_status $(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/token" \
-    -H "Content-Type: application/x-www-form-urlencoded" \
-    -d "username=user@example.com&password=password") 200
-
+    -d "username=${USER_EMAIL}&password=password")
+STATUS=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+check_status $STATUS 200
+USER_TOKEN=$(echo $BODY | jq -r '.access_token')
 if [ -z "$USER_TOKEN" ]; then
     echo "  [FAIL] Could not get user token."
     exit 1
@@ -48,25 +50,26 @@ echo "  [SUCCESS] User token obtained."
 
 # 3. Register a new admin
 echo "3. Registering new admin..."
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/users/" \
+ADMIN_EMAIL="admin_${RANDOM_ID}@example.com"
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/users/users/" \
     -H "Content-Type: application/json" \
-    -d '{
-        "email": "admin@example.com",
-        "password": "adminpassword",
-        "role": "admin"
-    }')
+    -d "{
+        \"email\": \"${ADMIN_EMAIL}\",
+        \"password\": \"adminpassword\",
+        \"role\": \"admin\"
+    }")
+STATUS=$(echo "$RESPONSE" | tail -n1)
 check_status $STATUS 200
 
 # 4. Login as admin and get token
 echo "4. Logging in as admin..."
-RESPONSE=$(curl -s -X POST "$BASE_URL/token" \
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/users/token" \
     -H "Content-Type: application/x-www-form-urlencoded" \
-    -d "username=admin@example.com&password=adminpassword")
-ADMIN_TOKEN=$(echo $RESPONSE | jq -r '.access_token')
-check_status $(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/token" \
-    -H "Content-Type: application/x-www-form-urlencoded" \
-    -d "username=admin@example.com&password=adminpassword") 200
-
+    -d "username=${ADMIN_EMAIL}&password=adminpassword")
+STATUS=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+check_status $STATUS 200
+ADMIN_TOKEN=$(echo $BODY | jq -r '.access_token')
 if [ -z "$ADMIN_TOKEN" ]; then
     echo "  [FAIL] Could not get admin token."
     exit 1
@@ -75,39 +78,89 @@ echo "  [SUCCESS] Admin token obtained."
 
 # 5. Create a team (admin only)
 echo "5. Creating a team..."
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/teams/" \
+TEAM_A_NAME="Team A ${RANDOM_ID}"
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/teams/teams/" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $ADMIN_TOKEN" \
+    -d "{
+        \"name\": \"${TEAM_A_NAME}\",
+        \"country\": \"Country A\"
+    }")
+STATUS=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+check_status $STATUS 200
+TEAM_A_ID=$(echo $BODY | jq -r '.id')
+echo "  [SUCCESS] Team created with ID: $TEAM_A_ID"
+
+# 6. Create another team (admin only)
+echo "6. Creating another team..."
+TEAM_B_NAME="Team B ${RANDOM_ID}"
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/teams/teams/" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $ADMIN_TOKEN" \
+    -d "{
+        \"name\": \"${TEAM_B_NAME}\",
+        \"country\": \"Country B\"
+    }")
+STATUS=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+check_status $STATUS 200
+TEAM_B_ID=$(echo $BODY | jq -r '.id')
+echo "  [SUCCESS] Team created with ID: $TEAM_B_ID"
+
+# 7. Create a match (admin only)
+echo "7. Creating a match..."
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/matches/matches/" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $ADMIN_TOKEN" \
+    -d "{
+        \"home_team_id\": ${TEAM_A_ID},
+        \"away_team_id\": ${TEAM_B_ID},
+        \"start_time\": \"2024-01-01T12:00:00Z\"
+    }")
+STATUS=$(echo "$RESPONSE" | tail -n1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+check_status $STATUS 200
+MATCH_ID=$(echo $BODY | jq -r '.id')
+echo "  [SUCCESS] Match created with ID: $MATCH_ID"
+
+# 8. Create odds for the match (admin only)
+echo "8. Creating odds for the match..."
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/matches/matches/${MATCH_ID}/odds" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $ADMIN_TOKEN" \
     -d '{
-        "name": "Team A",
-        "country": "Country A"
+        "win_home": 1.5,
+        "draw": 3.0,
+        "win_away": 5.0
     }')
+STATUS=$(echo "$RESPONSE" | tail -n1)
 check_status $STATUS 200
-echo "  [SUCCESS] Team created."
+echo "  [SUCCESS] Odds created."
 
-# 6. Create a match (admin only)
-echo "6. Creating a match..."
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/matches/" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $ADMIN_TOKEN" \
-    -d '{
-        "home_team_id": 1,
-        "away_team_id": 2,
-        "start_time": "2024-01-01T12:00:00Z"
-    }')
-check_status $STATUS 200
-echo "  [SUCCESS] Match created."
-
-# 7. Place a bet (user)
-echo "7. Placing a bet..."
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/bets/" \
+# 9. Update user wallet
+echo "9. Updating user wallet..."
+RESPONSE=$(curl -s -w "\n%{http_code}" -X PATCH "$BASE_URL/users/users/me/wallet" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $USER_TOKEN" \
     -d '{
-        "match_id": 1,
-        "outcome": "win_home",
-        "amount_staked": 10.0
+        "amount": 100.0
     }')
+STATUS=$(echo "$RESPONSE" | tail -n1)
+check_status $STATUS 200
+echo "  [SUCCESS] User wallet updated."
+
+# 10. Place a bet (user)
+echo "10. Placing a bet..."
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/bets/bets/" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $USER_TOKEN" \
+    -d "{
+        \"match_id\": ${MATCH_ID},
+        \"outcome\": \"win_home\",
+        \"amount_staked\": 10.0
+    }")
+STATUS=$(echo "$RESPONSE" | tail -n1)
 check_status $STATUS 200
 echo "  [SUCCESS] Bet placed."
 

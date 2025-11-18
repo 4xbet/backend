@@ -16,7 +16,9 @@ async def get_match(db: AsyncSession, match_id: int):
 
 
 async def get_matches(db: AsyncSession, skip: int = 0, limit: int = 100):
-    result = await db.execute(select(models.Match).offset(skip).limit(limit))
+    result = await db.execute(
+        select(models.Match).options(selectinload(models.Match.odds)).offset(skip).limit(limit)
+    )
     return result.scalars().all()
 
 
@@ -25,7 +27,7 @@ async def create_match(db: AsyncSession, match: schemas.MatchCreate):
     db.add(db_match)
     await db.commit()
     await db.refresh(db_match)
-    return db_match
+    return await get_match(db, db_match.id)
 
 
 async def create_match_odds(db: AsyncSession, match_id: int, odds: schemas.OddsCreate):
