@@ -1,106 +1,129 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { MoreHorizontal } from 'lucide-react';
-import toast from 'react-hot-toast';
-
-import AuthGuard from '@/components/AuthGuard';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+"use client";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import apiClient from '@/libraries/apiClient';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import apiClient from "@/libraries/apiClient";
+import { Team } from "@/types";
+import TeamForm from "./TeamForm";
+import toast from "react-hot-toast";
 
-interface Team {
-  id: number;
-  name: string;
-}
-
-const AdminTeamsPage = () => {
+export default function AdminTeamsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [editingTeam, setEditingTeam] = useState<Team | undefined>(undefined);
+
+  const fetchTeams = async () => {
+    try {
+      const response = await apiClient.teams.getAll();
+      setTeams(response.data);
+    } catch (error) {
+      console.error("Failed to fetch teams:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        setLoading(true);
-        const response = await apiClient.get('/teams/');
-        setTeams(response.data);
-      } catch (error) {
-        toast.error('Failed to fetch teams.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTeams();
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (confirm('Are you sure you want to delete this team?')) {
+    if (confirm("Are you sure you want to delete this team?")) {
       try {
-        await apiClient.delete(`/teams/${id}`);
-        setTeams(teams.filter((team) => team.id !== id));
-        toast.success('Team deleted successfully.');
+        await apiClient.teams.delete(id.toString());
+        toast.success("Team deleted successfully!");
+        fetchTeams();
       } catch (error) {
-        toast.error('Failed to delete team.');
+        toast.error("Failed to delete team.");
       }
     }
   };
 
-  return (
-    <AuthGuard adminOnly>
-      <div className="container mx-auto py-10">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Manage Teams</h1>
-          <Button>Add Team</Button>
-        </div>
-        {loading ? (
-          <p>Loading teams...</p>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {teams.map((team) => (
-                <TableRow key={team.id}>
-                  <TableCell className="font-medium">{team.id}</TableCell>
-                  <TableCell>{team.name}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(team.id)}>Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </div>
-    </AuthGuard>
-  );
-};
+  const handleSuccess = () => {
+    setDialogOpen(false);
+    setEditingTeam(undefined);
+    fetchTeams();
+  };
 
-export default AdminTeamsPage;
+  if (loading) {
+    return <div className="text-center py-10">Loading teams...</div>;
+  }
+
+  return (
+    <div className="container mx-auto py-10">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Manage Teams</CardTitle>
+            <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button onClick={() => setEditingTeam(undefined)}>Add Team</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{editingTeam ? "Edit Team" : "Add New Team"}</DialogTitle>
+                </DialogHeader>
+                <TeamForm team={editingTeam} onSuccess={handleSuccess} />
+              </DialogContent>
+            </Dialog>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {teams.map((team) => (
+                  <TableRow key={team.id}>
+                    <TableCell>{team.id}</TableCell>
+                    <TableCell>{team.name}</TableCell>
+                    <TableCell className="space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditingTeam(team);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(team.id)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
+  );
+}
