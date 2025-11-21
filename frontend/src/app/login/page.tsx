@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import useAuthStore from '@/store/useAuthStore';
-import apiClient from '@/lib/apiClient';
+import apiClient from '@/libraries/apiClient';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
@@ -54,28 +54,17 @@ const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="w-full max-w-sm">
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
-            <CardDescription>
-              Enter your email below to login to your account.
-            </CardDescription>
+            <CardDescription>Enter your email below to login to your account.</CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  {...register('email')}
-                />
+                <Input id="email" type="email" placeholder="m@example.com" {...register('email')} />
                 {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
               </div>
               <div className="grid gap-2">

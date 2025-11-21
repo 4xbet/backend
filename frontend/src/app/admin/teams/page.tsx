@@ -6,14 +6,7 @@ import toast from 'react-hot-toast';
 
 import AuthGuard from '@/components/AuthGuard';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import apiClient from '@/lib/apiClient';
+import apiClient from '@/libraries/apiClient';
 
 interface Team {
   id: number;
@@ -96,9 +89,7 @@ const AdminTeamsPage = () => {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(team.id)}>
-                          Delete
-                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(team.id)}>Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
