@@ -39,9 +39,7 @@ const LoginPage = () => {
       formData.append('username', data.email);
       formData.append('password', data.password);
 
-      const response = await apiClient.post('/token', formData, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      const response = await apiClient.auth.login(formData);
 
       const { access_token } = response.data;
       login(access_token);

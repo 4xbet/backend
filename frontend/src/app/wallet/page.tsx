@@ -1,0 +1,88 @@
+"use client";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import apiClient from "@/libraries/apiClient";
+import toast from "react-hot-toast";
+import { Wallet } from "@/types";
+
+export default function WalletPage() {
+  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [amount, setAmount] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const fetchWallet = async () => {
+    try {
+      const response = await apiClient.users.getWallet();
+      setWallet(response.data);
+    } catch (error) {
+      console.error("Failed to fetch wallet:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWallet();
+  }, []);
+
+  const handleTopUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const topUpAmount = parseFloat(amount);
+    if (isNaN(topUpAmount) || topUpAmount <= 0) {
+      toast.error("Please enter a valid amount.");
+      return;
+    }
+    try {
+      await apiClient.users.updateWallet({ amount: topUpAmount });
+      toast.success("Wallet topped up successfully!");
+      fetchWallet(); // Refresh wallet balance
+      setAmount("");
+    } catch (error) {
+      toast.error("Failed to top up wallet.");
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center py-10">Loading wallet...</div>;
+  }
+
+  return (
+    <div className="container mx-auto py-10">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+        <Card>
+          <CardHeader>
+            <CardTitle>My Wallet</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-6">
+              <p className="text-lg font-semibold">Current Balance:</p>
+              <p className="text-3xl">
+                {wallet ? wallet.balance.toFixed(2) : "0.00"}
+              </p>
+            </div>
+            <form onSubmit={handleTopUp} className="space-y-4">
+              <h2 className="text-xl font-semibold">Top Up</h2>
+              <div>
+                <Label htmlFor="amount">Amount</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  min="0.01"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <Button type="submit">Add Funds</Button>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
+  );
+}
