@@ -1,15 +1,15 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import apiClient from "@/libraries/apiClient";
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import apiClient from '@/libraries/apiClient';
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -17,10 +17,10 @@ export default function RegisterPage() {
     e.preventDefault();
     setError(null);
     try {
-      await apiClient.users.register({ email, password });
-      router.push("/login");
+      await apiClient.users.register({ email, password, role: 'user' });
+      router.push('/login');
     } catch (err) {
-      setError("Failed to register. Please try again.");
+      setError('Failed to register. Please try again.');
     }
   };
 
@@ -36,13 +36,7 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div>
             <Label htmlFor="password">Password</Label>

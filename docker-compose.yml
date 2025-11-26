@@ -6,7 +6,6 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@user_db/user_db
       - SECRET_KEY=your_secret_key
-      - ROOT_PATH=/api/users
     depends_on:
       user_db:
         condition: service_healthy
@@ -14,7 +13,7 @@ services:
       - app-network
 
   user_db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -34,7 +33,6 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@teams_db/teams_db
       - SECRET_KEY=your_secret_key
-      - ROOT_PATH=/api/teams
     depends_on:
       teams_db:
         condition: service_healthy
@@ -42,7 +40,7 @@ services:
       - app-network
 
   teams_db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -62,7 +60,6 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@matches_db/matches_db
       - SECRET_KEY=your_secret_key
-      - ROOT_PATH=/api/matches
     depends_on:
       matches_db:
         condition: service_healthy
@@ -70,7 +67,7 @@ services:
       - app-network
 
   matches_db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -92,7 +89,6 @@ services:
       - SECRET_KEY=your_secret_key
       - USER_SERVICE_URL=http://user_service:80
       - MATCHES_SERVICE_URL=http://matches_service:80
-      - ROOT_PATH=/api/bets
     depends_on:
       bets_db:
         condition: service_healthy
@@ -102,7 +98,7 @@ services:
       - app-network
 
   bets_db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
