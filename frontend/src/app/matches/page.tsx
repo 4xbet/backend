@@ -4,31 +4,42 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import apiClient from "@/libraries/apiClient";
-
-interface Match {
-  id: number;
-  team1_id: number;
-  team2_id: number;
-  start_time: string;
-}
+import { Match, Team } from "@/types";
 
 export default function MatchesPage() {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMatches = async () => {
+    const fetchMatchesAndTeams = async () => {
       try {
-        const response = await apiClient.matches.getAll();
-        setMatches(response.data);
+        const [matchesRes, teamsRes] = await Promise.all([
+          apiClient.matches.getAll(),
+          apiClient.teams.getAll(),
+        ]);
+        if (Array.isArray(matchesRes.data)) {
+          setMatches(matchesRes.data);
+        } else {
+          console.error("Fetched matches data is not an array:", matchesRes.data);
+        }
+        if (Array.isArray(teamsRes.data)) {
+          setTeams(teamsRes.data);
+        } else {
+          console.error("Fetched teams data is not an array:", teamsRes.data);
+        }
       } catch (error) {
-        console.error("Failed to fetch matches:", error);
+        console.error("Failed to fetch matches or teams:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchMatches();
+    fetchMatchesAndTeams();
   }, []);
+
+  const getTeamName = (teamId: number) => {
+    return teams.find((t) => t.id === teamId)?.name || `Team ${teamId}`;
+  };
 
   if (loading) {
     return <div className="text-center py-10">Loading matches...</div>;
@@ -57,10 +68,9 @@ export default function MatchesPage() {
             <Link href={`/matches/${match.id}`} passHref>
               <Card className="hover:shadow-lg transition-shadow duration-300">
                 <CardHeader>
-                  <CardTitle>Match {match.id}</CardTitle>
+                  <CardTitle>{getTeamName(match.team1_id)} vs {getTeamName(match.team2_id)}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p>Team {match.team1_id} vs Team {match.team2_id}</p>
                   <p className="text-sm text-gray-500">
                     {new Date(match.start_time).toLocaleString()}
                   </p>

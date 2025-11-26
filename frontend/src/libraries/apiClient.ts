@@ -15,7 +15,7 @@ import {
 } from '@/types';
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost/api',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -23,7 +23,7 @@ const axiosInstance: AxiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = useAuthStore.getState().token;
+    const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -52,7 +52,10 @@ const apiClient = {
     register: (data: any) => axiosInstance.post<User>('/users/', data),
   },
   auth: {
-    login: (data: any) => axiosInstance.post('/token', data),
+    login: (data: any) =>
+      axiosInstance.post('/token', data, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      }),
   },
   teams: {
     create: (data: CreateTeamData) => axiosInstance.post<Team>('/teams/', data),

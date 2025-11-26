@@ -8,12 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import apiClient from "@/libraries/apiClient";
 import toast from "react-hot-toast";
-import { Match, Wallet } from "@/types";
+import { Match, Team, Wallet } from "@/types";
 
 export default function MatchDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const [match, setMatch] = useState<Match | null>(null);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [amount, setAmount] = useState<string>("");
   const [teamId, setTeamId] = useState<number | null>(null);
@@ -21,13 +22,15 @@ export default function MatchDetailPage() {
 
   useEffect(() => {
     if (id) {
-      const fetchMatchAndWallet = async () => {
+      const fetchMatchData = async () => {
         try {
-          const [matchRes, walletRes] = await Promise.all([
+          const [matchRes, teamsRes, walletRes] = await Promise.all([
             apiClient.matches.getById(id),
+            apiClient.teams.getAll(),
             apiClient.users.getWallet(),
           ]);
           setMatch(matchRes.data);
+          setTeams(teamsRes.data);
           setWallet(walletRes.data);
         } catch (error) {
           console.error("Failed to fetch match details:", error);
@@ -35,9 +38,13 @@ export default function MatchDetailPage() {
           setLoading(false);
         }
       };
-      fetchMatchAndWallet();
+      fetchMatchData();
     }
   }, [id]);
+
+  const getTeamName = (teamId: number) => {
+    return teams.find((t) => t.id === teamId)?.name || `Team ${teamId}`;
+  };
 
   const handleBet = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,7 +86,7 @@ export default function MatchDetailPage() {
         <Card>
           <CardHeader>
             <CardTitle>
-              Match: Team {match.team1_id} vs Team {match.team2_id}
+              Match: {getTeamName(match.team1_id)} vs {getTeamName(match.team2_id)}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -101,14 +108,14 @@ export default function MatchDetailPage() {
                     variant={teamId === match.team1_id ? "default" : "outline"}
                     onClick={() => setTeamId(match.team1_id)}
                   >
-                    Team {match.team1_id}
+                    {getTeamName(match.team1_id)}
                   </Button>
                   <Button
                     type="button"
                     variant={teamId === match.team2_id ? "default" : "outline"}
                     onClick={() => setTeamId(match.team2_id)}
                   >
-                    Team {match.team2_id}
+                    {getTeamName(match.team2_id)}
                   </Button>
                 </div>
               </div>
