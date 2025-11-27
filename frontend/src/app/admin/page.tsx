@@ -13,17 +13,17 @@ export default function AdminDashboardPage() {
       >
         <Card>
           <CardHeader>
-            <CardTitle>Admin Dashboard</CardTitle>
+            <CardTitle>Панель администратора</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Link href="/admin/teams" passHref>
               <Button size="lg" className="w-full">
-                Manage Teams
+                Управление командами
               </Button>
             </Link>
             <Link href="/admin/matches" passHref>
               <Button size="lg" className="w-full">
-                Manage Matches
+                Управление матчами
               </Button>
             </Link>
           </CardContent>

@@ -13,10 +13,10 @@ export default function Home() {
         className="mb-8"
       >
         <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-gray-700 via-gray-900 to-black dark:from-gray-100 dark:via-gray-300 dark:to-white">
-          Welcome to 4xbet
+          Добро пожаловать в 4xbet
         </h1>
         <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-          Your ultimate destination for sports betting.
+          Ваше идеальное место для ставок на спорт.
         </p>
       </motion.div>
 
@@ -27,11 +27,11 @@ export default function Home() {
         className="flex flex-col sm:flex-row gap-4"
       >
         <Link href="/register" passHref>
-          <Button size="lg">Get Started</Button>
+          <Button size="lg">Начать</Button>
         </Link>
         <Link href="/login" passHref>
           <Button size="lg" variant="outline">
-            Login
+            Войти
           </Button>
         </Link>
       </motion.div>

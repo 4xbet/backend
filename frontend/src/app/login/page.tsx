@@ -16,8 +16,8 @@ import useAuthStore from '@/store/useAuthStore';
 import apiClient from '@/libraries/apiClient';
 
 const loginSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters long' }),
+  email: z.string().email({ message: 'Неверный адрес электронной почты' }),
+  password: z.string().min(6, { message: 'Пароль должен содержать не менее 6 символов' }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -43,10 +43,10 @@ const LoginPage = () => {
 
       const { access_token } = response.data;
       login(access_token);
-      toast.success('Logged in successfully!');
+      toast.success('Вы успешно вошли в систему!');
       router.push('/matches');
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'An error occurred during login.');
+      toast.error(error.response?.data?.detail || 'Произошла ошибка при входе в систему.');
     }
   };
 
@@ -55,30 +55,30 @@ const LoginPage = () => {
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="w-full max-w-sm">
           <CardHeader>
-            <CardTitle className="text-2xl">Login</CardTitle>
-            <CardDescription>Enter your email below to login to your account.</CardDescription>
+            <CardTitle className="text-2xl">Вход</CardTitle>
+            <CardDescription>Введите свою почту ниже, чтобы войти в свой аккаунт.</CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Почта</Label>
                 <Input id="email" type="email" placeholder="m@example.com" {...register('email')} />
                 {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Пароль</Label>
                 <Input id="password" type="password" {...register('password')} />
                 {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
               </div>
             </CardContent>
             <CardFooter className="flex flex-col">
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? 'Signing in...' : 'Sign in'}
+                {isSubmitting ? 'Вход...' : 'Войти'}
               </Button>
               <p className="mt-4 text-center text-sm text-muted-foreground">
-                Don't have an account?{' '}
+                Нет аккаунта?{' '}
                 <Link href="/register" className="underline">
-                  Sign up
+                  Зарегистрироваться
                 </Link>
               </p>
             </CardFooter>

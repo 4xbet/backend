@@ -24,11 +24,11 @@ export default function ProfilePage() {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-10">Loading profile...</div>;
+    return <div className="text-center py-10">Загрузка профиля...</div>;
   }
 
   if (!user) {
-    return <div className="text-center py-10">Could not load user profile.</div>;
+    return <div className="text-center py-10">Не удалось загрузить профиль пользователя.</div>;
   }
 
   return (
@@ -36,15 +36,15 @@ export default function ProfilePage() {
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <Card>
           <CardHeader>
-            <CardTitle>My Profile</CardTitle>
+            <CardTitle>Мой профиль</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="font-semibold">Email:</p>
+              <p className="font-semibold">Почта:</p>
               <p>{user.email}</p>
             </div>
             <div>
-              <p className="font-semibold">Role:</p>
+              <p className="font-semibold">Роль:</p>
               <p className="capitalize">{user.role}</p>
             </div>
           </CardContent>
