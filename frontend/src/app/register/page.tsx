@@ -20,7 +20,7 @@ export default function RegisterPage() {
       await apiClient.users.register({ email, password, role: 'user' });
       router.push('/login');
     } catch (err) {
-      setError('Failed to register. Please try again.');
+      setError('Не удалось зарегистрироваться. Пожалуйста, попробуйте еще раз.');
     }
   };
 
@@ -32,14 +32,14 @@ export default function RegisterPage() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md dark:bg-gray-800"
       >
-        <h1 className="text-2xl font-bold text-center">Register</h1>
+        <h1 className="text-2xl font-bold text-center">Регистрация</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Почта</Label>
             <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div>
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Пароль</Label>
             <Input
               id="password"
               type="password"
@@ -50,7 +50,7 @@ export default function RegisterPage() {
           </div>
           {error && <p className="text-red-500">{error}</p>}
           <Button type="submit" className="w-full">
-            Register
+            Зарегистрироваться
           </Button>
         </form>
       </motion.div>

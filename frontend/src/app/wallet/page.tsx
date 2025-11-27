@@ -33,21 +33,21 @@ export default function WalletPage() {
     e.preventDefault();
     const topUpAmount = parseFloat(amount);
     if (isNaN(topUpAmount) || topUpAmount <= 0) {
-      toast.error("Please enter a valid amount.");
+      toast.error("Пожалуйста, введите действительную сумму.");
       return;
     }
     try {
       await apiClient.users.updateWallet({ amount: topUpAmount });
-      toast.success("Wallet topped up successfully!");
+      toast.success("Кошелек успешно пополнен!");
       fetchWallet(); // Refresh wallet balance
       setAmount("");
     } catch (error) {
-      toast.error("Failed to top up wallet.");
+      toast.error("Не удалось пополнить кошелек.");
     }
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading wallet...</div>;
+    return <div className="text-center py-10">Загрузка кошелька...</div>;
   }
 
   return (
@@ -55,19 +55,19 @@ export default function WalletPage() {
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <Card>
           <CardHeader>
-            <CardTitle>My Wallet</CardTitle>
+            <CardTitle>Мой кошелек</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="mb-6">
-              <p className="text-lg font-semibold">Current Balance:</p>
+              <p className="text-lg font-semibold">Текущий баланс:</p>
               <p className="text-3xl">
                 {wallet ? wallet.balance.toFixed(2) : "0.00"}
               </p>
             </div>
             <form onSubmit={handleTopUp} className="space-y-4">
-              <h2 className="text-xl font-semibold">Top Up</h2>
+              <h2 className="text-xl font-semibold">Пополнить</h2>
               <div>
-                <Label htmlFor="amount">Amount</Label>
+                <Label htmlFor="amount">Сумма</Label>
                 <Input
                   id="amount"
                   type="number"
@@ -78,7 +78,7 @@ export default function WalletPage() {
                   required
                 />
               </div>
-              <Button type="submit">Add Funds</Button>
+              <Button type="submit">Добавить средства</Button>
             </form>
           </CardContent>
         </Card>

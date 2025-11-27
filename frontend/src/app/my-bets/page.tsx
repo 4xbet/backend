@@ -52,7 +52,7 @@ export default function MyBetsPage() {
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading your bets...</div>;
+    return <div className="text-center py-10">Загрузка ваших ставок...</div>;
   }
 
   return (
@@ -60,16 +60,16 @@ export default function MyBetsPage() {
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <Card>
           <CardHeader>
-            <CardTitle>My Bets</CardTitle>
+            <CardTitle>Мои ставки</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Match</TableHead>
-                  <TableHead>Your Bet</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Матч</TableHead>
+                  <TableHead>Ваша ставка</TableHead>
+                  <TableHead>Сумма</TableHead>
+                  <TableHead>Статус</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -85,7 +85,7 @@ export default function MyBetsPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center">
-                      You haven't placed any bets yet.
+                      Вы еще не сделали ни одной ставки.
                     </TableCell>
                   </TableRow>
                 )}
