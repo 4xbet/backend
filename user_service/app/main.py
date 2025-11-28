@@ -70,8 +70,12 @@ async def get_current_user(user: auth.User = Depends(auth.get_current_user)):
 
 
 @router.get("/users/me", response_model=schemas.User)
-async def read_users_me(current_user: models.User = Depends(get_current_user)):
-    return current_user
+async def read_users_me(
+    current_user: models.User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    user = await crud.get_user_by_email(db, email=current_user.email)
+    return user
 
 
 @router.get("/users/me/wallet", response_model=schemas.Wallet)
