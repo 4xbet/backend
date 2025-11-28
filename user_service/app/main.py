@@ -14,21 +14,7 @@ logger = logging.getLogger(__name__)
 ROOT_PATH = os.getenv("ROOT_PATH", "")
 app = FastAPI(root_path=ROOT_PATH)
 
-origins = [
-    "http://localhost:3000",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    max_age=600,
-)
-
 router = APIRouter()
-
 
 class BalanceUpdate(BaseModel):
     amount: float
@@ -70,8 +56,12 @@ async def get_current_user(user: auth.User = Depends(auth.get_current_user)):
 
 
 @router.get("/users/me", response_model=schemas.User)
-async def read_users_me(current_user: models.User = Depends(get_current_user)):
-    return current_user
+async def read_users_me(
+    current_user: models.User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    user = await crud.get_user_by_email(db, email=current_user.email)
+    return user
 
 
 @router.get("/users/me/wallet", response_model=schemas.Wallet)
