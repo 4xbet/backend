@@ -8,12 +8,12 @@ import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import useAuthStore from '@/store/useAuthStore';
-import apiClient from '@/libraries/apiClient';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import useAuthStore from '@/entities/user/model/store';
+import apiClient from '@/shared/api';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Неверный адрес электронной почты' }),

@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/libraries/apiClient";
-import { Match, Team } from "@/types";
+import apiClient from "@/shared/api";
+import { Match, Team } from "@/shared/types";
 
 export default function MatchesPage() {
   const [matches, setMatches] = useState<Match[]>([]);

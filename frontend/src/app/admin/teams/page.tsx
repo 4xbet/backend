@@ -18,8 +18,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/libraries/apiClient";
-import { Team } from "@/types";
+import apiClient from "@/shared/api";
+import { Team } from "@/shared/types";
 import TeamForm from "./TeamForm";
 import toast from "react-hot-toast";
 
