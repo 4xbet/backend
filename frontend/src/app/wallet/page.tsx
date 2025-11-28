@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/libraries/apiClient";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import apiClient from "@/shared/api";
 import toast from "react-hot-toast";
-import { Wallet } from "@/types";
+import { Wallet } from "@/shared/types";
 
 export default function WalletPage() {
   const [wallet, setWallet] = useState<Wallet | null>(null);

@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import { jwtDecode } from 'jwt-decode';
 
+interface DecodedToken {
+  id: number;
+  sub: string; // 'sub' is the standard JWT claim for subject (often the user's email)
+  role: 'user' | 'admin';
+}
+
 interface User {
   id: number;
   email: string;
@@ -24,11 +30,16 @@ const useAuthStore = create<AuthState>((set) => ({
   isLoading: true,
   login: (token) => {
     try {
-      const decodedUser = jwtDecode<User>(token);
+      const decodedToken = jwtDecode<DecodedToken>(token);
+      const user: User = {
+        id: decodedToken.id,
+        email: decodedToken.sub,
+        role: decodedToken.role,
+      };
       localStorage.setItem('authToken', token);
       set({
         token,
-        user: decodedUser,
+        user,
         isLoggedIn: true,
       });
     } catch (error) {
@@ -47,10 +58,15 @@ const useAuthStore = create<AuthState>((set) => ({
     try {
       const token = localStorage.getItem('authToken');
       if (token) {
-        const decodedUser = jwtDecode<User>(token);
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        const user: User = {
+          id: decodedToken.id,
+          email: decodedToken.sub,
+          role: decodedToken.role,
+        };
         set({
           token,
-          user: decodedUser,
+          user,
           isLoggedIn: true,
           isLoading: false,
         });

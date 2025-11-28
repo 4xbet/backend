@@ -1,18 +1,18 @@
 "use client";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import apiClient from "@/libraries/apiClient";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import apiClient from "@/shared/api";
 import toast from "react-hot-toast";
-import { Match, Team } from "@/types";
+import { Match, Team } from "@/shared/types";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/ui/select";
 
 interface MatchFormProps {
   match?: Match;

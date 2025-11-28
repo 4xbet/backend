@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./global.css";
-import ThemeProvider from "@/components/ThemeProvider";
-import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
-import PageTransition from "@/components/PageTransition";
+import ThemeProvider from "@/shared/ui/ThemeProvider";
+import ThemeSwitcher from "@/shared/ui/ThemeSwitcher";
+import PageTransition from "@/shared/ui/PageTransition";
 import { Toaster } from 'react-hot-toast'; // Import Toaster
+import Header from "@/widgets/header/ui/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,10 +24,8 @@ export default function RootLayout({
       <body className={`${inter.className} bg-background text-foreground transition-colors duration-300`}>
         <ThemeProvider>
           <Toaster position="bottom-right" />
-          <div className="absolute top-4 right-4 z-10">
-            <ThemeSwitcher />
-          </div>
-          <main>
+          <Header />
+          <main className="container mx-auto py-8">
             <PageTransition>{children}</PageTransition>
           </main>
         </ThemeProvider>

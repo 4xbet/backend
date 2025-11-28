@@ -1,40 +1,102 @@
 "use client";
-import { motion } from "framer-motion";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { motion, Variants } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Button } from "@/shared/ui/button";
+import { ArrowRight, BarChart2, Ticket, User } from "lucide-react";
+import useAuthStore from "@/entities/user/model/store";
 
-export default function Home() {
+export default function HomePage() {
+  const { isLoggedIn } = useAuthStore();
+
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.2,
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    }),
+  };
+
+  const features = [
+    {
+      title: "Live Матчи",
+      description: "Следите за результатами в реальном времени.",
+      href: "/matches",
+      icon: <BarChart2 className="h-8 w-8 text-primary" />,
+    },
+    {
+      title: "Ваши Ставки",
+      description: "Просматривайте историю и текущие ставки.",
+      href: "/my-bets",
+      icon: <Ticket className="h-8 w-8 text-primary" />,
+    },
+    {
+      title: "Профиль",
+      description: "Управляйте своим аккаунтом и кошельком.",
+      href: "/profile",
+      icon: <User className="h-8 w-8 text-primary" />,
+    },
+  ];
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-center p-4 overflow-hidden">
+    <div className="container mx-auto text-center py-10">
       <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
-        className="mb-8"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="mb-12"
       >
-        <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-gray-700 via-gray-900 to-black dark:from-gray-100 dark:via-gray-300 dark:to-white">
-          Добро пожаловать в 4xbet
+        <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          Добро пожаловать в <span className="text-primary">4xBet</span>
         </h1>
-        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-          Ваше идеальное место для ставок на спорт.
+        <p className="text-lg md:text-xl text-muted-foreground">
+          Ваша платформа для ставок на любимые матчи.
         </p>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.5, ease: "backOut" }}
-        className="flex flex-col sm:flex-row gap-4"
-      >
-        <Link href="/register" passHref>
-          <Button size="lg">Начать</Button>
-        </Link>
-        <Link href="/login" passHref>
-          <Button size="lg" variant="outline">
-            Войти
-          </Button>
-        </Link>
-      </motion.div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {features.map((feature, i) => (
+          <motion.div key={feature.title} custom={i} variants={cardVariants} initial="hidden" animate="visible">
+            <Card className="h-full flex flex-col">
+              <CardHeader className="flex-row items-center gap-4">
+                {feature.icon}
+                <CardTitle>{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <p className="text-muted-foreground">{feature.description}</p>
+              </CardContent>
+              <div className="p-6 pt-0">
+                <Link href={feature.href} passHref>
+                  <Button className="w-full">
+                    Перейти <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      {!isLoggedIn && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+          className="mt-12"
+        >
+          <p className="text-lg mb-4">Готовы начать?</p>
+          <Link href="/register" passHref>
+            <Button size="lg">
+              Присоединяйтесь сейчас <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </motion.div>
+      )}
     </div>
   );
 }

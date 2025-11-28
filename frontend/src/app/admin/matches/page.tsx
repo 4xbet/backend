@@ -8,18 +8,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+} from "@/shared/ui/table";
+import { Button } from "@/shared/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/libraries/apiClient";
-import { Match, Team } from "@/types";
+} from "@/shared/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import apiClient from "@/shared/api";
+import { Match, Team } from "@/shared/types";
 import MatchForm from "./MatchForm";
 import OddsForm from "./OddsForm";
 

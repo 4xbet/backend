@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import apiClient from '@/libraries/apiClient';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import apiClient from '@/shared/api';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');

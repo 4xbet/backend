@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import useAuthStore from '@/store/useAuthStore';
+import useAuthStore from '@/entities/user/model/store';
 import {
   Bet,
   CreateBetData,
@@ -12,7 +12,7 @@ import {
   UpdateWalletData,
   User,
   Wallet,
-} from '@/types';
+} from '@/shared/types';
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',

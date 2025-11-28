@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Button } from "@/shared/ui/button";
 import {
   Table,
   TableBody,
@@ -8,18 +9,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+} from "@/shared/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/libraries/apiClient";
-import { Team } from "@/types";
+} from "@/shared/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import apiClient from "@/shared/api";
+import { Team } from "@/shared/types";
 import TeamForm from "./TeamForm";
 import toast from "react-hot-toast";
 

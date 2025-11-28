@@ -1,11 +1,11 @@
 "use client";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import apiClient from "@/libraries/apiClient";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import apiClient from "@/shared/api";
 import toast from "react-hot-toast";
-import { Match } from "@/types";
+import { Match } from "@/shared/types";
 
 interface OddsFormProps {
   match: Match;
