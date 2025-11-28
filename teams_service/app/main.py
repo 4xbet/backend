@@ -13,18 +13,6 @@ logger = logging.getLogger(__name__)
 ROOT_PATH = os.getenv("ROOT_PATH", "")
 app = FastAPI(root_path=ROOT_PATH)
 
-origins = [
-    "http://localhost:3000",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    max_age=600,
-)
 
 router = APIRouter()
 

@@ -114,7 +114,7 @@ services:
   api_gateway:
     build: ./api_gateway
     ports:
-      - '8000:80'
+      - '8000:8000'
     depends_on:
       user_service:
         condition: service_started
