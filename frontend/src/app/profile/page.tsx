@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/libraries/apiClient";
-import { User } from "@/types";
+import apiClient from "@/shared/api";
+import { User } from "@/shared/types";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);

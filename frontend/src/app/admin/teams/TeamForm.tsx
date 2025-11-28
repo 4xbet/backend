@@ -10,9 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import apiClient from "@/libraries/apiClient";
+import apiClient from "@/shared/api";
 import toast from "react-hot-toast";
-import { Team } from "@/types";
+import { Team } from "@/shared/types";
 
 interface TeamFormProps {
   team?: Team;

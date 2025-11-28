@@ -10,8 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/libraries/apiClient";
-import { Bet, Match, Team } from "@/types";
+import apiClient from "@/shared/api";
+import { Bet, Match, Team } from "@/shared/types";
 
 export default function MyBetsPage() {
   const [bets, setBets] = useState<Bet[]>([]);
