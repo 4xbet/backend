@@ -7,6 +7,13 @@ interface User {
   role: 'user' | 'admin';
 }
 
+interface DecodedToken {
+  sub: string;
+  role: 'user' | 'admin';
+  id: number;
+  exp: number;
+}
+
 interface AuthState {
   token: string | null;
   user: User | null;
@@ -22,35 +29,59 @@ const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoggedIn: false,
   isLoading: true,
-  login: (token) => {
+  
+  login: (token: string) => {
     try {
-      const decodedUser = jwtDecode<User>(token);
+      const decoded = jwtDecode<DecodedToken>(token);
+      const user: User = {
+        id: decoded.id,
+        email: decoded.sub,
+        role: decoded.role,
+      };
+      
       localStorage.setItem('authToken', token);
+      
       set({
         token,
-        user: decodedUser,
+        user,
         isLoggedIn: true,
+        isLoading: false,
       });
     } catch (error) {
       console.error('Failed to decode token:', error);
+      set({ isLoading: false });
     }
   },
+  
   logout: () => {
     localStorage.removeItem('authToken');
     set({
       token: null,
       user: null,
       isLoggedIn: false,
+      isLoading: false,
     });
   },
+  
   initialize: () => {
     try {
+      if (typeof window === 'undefined') {
+        set({ isLoading: false });
+        return;
+      }
+      
       const token = localStorage.getItem('authToken');
       if (token) {
-        const decodedUser = jwtDecode<User>(token);
+        const decoded = jwtDecode<DecodedToken>(token);
+        const user: User = {
+          id: decoded.id,
+          email: decoded.sub,
+          role: decoded.role,
+        };
+        
         set({
           token,
-          user: decodedUser,
+          user,
           isLoggedIn: true,
           isLoading: false,
         });

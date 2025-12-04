@@ -21,15 +21,15 @@ export default function MatchesPage() {
         if (Array.isArray(matchesRes.data)) {
           setMatches(matchesRes.data);
         } else {
-          console.error("Fetched matches data is not an array:", matchesRes.data);
+          console.error("Полученные данные о матчах не являются массивом:", matchesRes.data);
         }
         if (Array.isArray(teamsRes.data)) {
           setTeams(teamsRes.data);
         } else {
-          console.error("Fetched teams data is not an array:", teamsRes.data);
+          console.error("Полученные данные о командах не являются массивом:", teamsRes.data);
         }
       } catch (error) {
-        console.error("Failed to fetch matches or teams:", error);
+        console.error("Ошибка при загрузке матчей или команд:", error);
       } finally {
         setLoading(false);
       }
@@ -38,7 +38,7 @@ export default function MatchesPage() {
   }, []);
 
   const getTeamName = (teamId: number) => {
-    return teams.find((t) => t.id === teamId)?.name || `Team ${teamId}`;
+    return teams.find((t) => t.id === teamId)?.name || `Команда ${teamId}`;
   };
 
   if (loading) {
@@ -68,7 +68,7 @@ export default function MatchesPage() {
             <Link href={`/matches/${match.id}`} passHref>
               <Card className="hover:shadow-lg transition-shadow duration-300">
                 <CardHeader>
-                  <CardTitle>{getTeamName(match.team1_id)} vs {getTeamName(match.team2_id)}</CardTitle>
+                  <CardTitle>{getTeamName(match.home_team_id)} против {getTeamName(match.away_team_id)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-500">

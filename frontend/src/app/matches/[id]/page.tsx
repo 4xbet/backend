@@ -33,7 +33,7 @@ export default function MatchDetailPage() {
           setTeams(teamsRes.data);
           setWallet(walletRes.data);
         } catch (error) {
-          console.error("Failed to fetch match details:", error);
+          console.error("Ошибка при загрузке деталей матча:", error);
         } finally {
           setLoading(false);
         }
@@ -43,18 +43,18 @@ export default function MatchDetailPage() {
   }, [id]);
 
   const getTeamName = (teamId: number) => {
-    return teams.find((t) => t.id === teamId)?.name || `Team ${teamId}`;
+    return teams.find((t) => t.id === teamId)?.name || `Команда ${teamId}`;
   };
 
   const handleBet = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!teamId || !amount) {
-      toast.error("Please select a team and enter an amount.");
+      toast.error("Пожалуйста, выберите команду и введите сумму.");
       return;
     }
     const betAmount = parseFloat(amount);
     if (wallet && wallet.balance < betAmount) {
-      toast.error("Insufficient balance.");
+      toast.error("Недостаточно средств.");
       return;
     }
     try {
@@ -63,21 +63,21 @@ export default function MatchDetailPage() {
         team_id: teamId,
         amount: betAmount,
       });
-      toast.success("Bet placed successfully!");
-      // Refresh wallet balance
+      toast.success("Ставка успешно размещена!");
+      // Обновляем баланс кошелька
       const walletRes = await apiClient.users.getWallet();
       setWallet(walletRes.data);
     } catch (error) {
-      toast.error("Failed to place bet.");
+      toast.error("Не удалось разместить ставку.");
     }
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading match details...</div>;
+    return <div className="text-center py-10">Загрузка деталей матча...</div>;
   }
 
   if (!match) {
-    return <div className="text-center py-10">Match not found.</div>;
+    return <div className="text-center py-10">Матч не найден.</div>;
   }
 
   return (
@@ -86,41 +86,41 @@ export default function MatchDetailPage() {
         <Card>
           <CardHeader>
             <CardTitle>
-              Match: {getTeamName(match.team1_id)} vs {getTeamName(match.team2_id)}
+              Матч: {getTeamName(match.home_team_id)} против {getTeamName(match.away_team_id)}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p>
-              <strong>Start Time:</strong>{" "}
+              <strong>Время начала:</strong>{" "}
               {new Date(match.start_time).toLocaleString()}
             </p>
             <div className="my-4">
               <p>
-                <strong>Your Balance:</strong> {wallet?.balance.toFixed(2)}
+                <strong>Ваш баланс:</strong> {wallet?.balance.toFixed(2)}
               </p>
             </div>
             <form onSubmit={handleBet} className="space-y-4">
               <div>
-                <Label>Select Team</Label>
+                <Label>Выберите команду</Label>
                 <div className="flex gap-4">
                   <Button
                     type="button"
-                    variant={teamId === match.team1_id ? "default" : "outline"}
-                    onClick={() => setTeamId(match.team1_id)}
+                    variant={teamId === match.home_team_id ? "default" : "outline"}
+                    onClick={() => setTeamId(match.home_team_id)}
                   >
-                    {getTeamName(match.team1_id)}
+                    {getTeamName(match.home_team_id)}
                   </Button>
                   <Button
                     type="button"
-                    variant={teamId === match.team2_id ? "default" : "outline"}
-                    onClick={() => setTeamId(match.team2_id)}
+                    variant={teamId === match.away_team_id ? "default" : "outline"}
+                    onClick={() => setTeamId(match.away_team_id)}
                   >
-                    {getTeamName(match.team2_id)}
+                    {getTeamName(match.away_team_id)}
                   </Button>
                 </div>
               </div>
               <div>
-                <Label htmlFor="amount">Bet Amount</Label>
+                <Label htmlFor="amount">Сумма ставки</Label>
                 <Input
                   id="amount"
                   type="number"
@@ -131,7 +131,7 @@ export default function MatchDetailPage() {
                   required
                 />
               </div>
-              <Button type="submit">Place Bet</Button>
+              <Button type="submit">Сделать ставку</Button>
             </form>
           </CardContent>
         </Card>

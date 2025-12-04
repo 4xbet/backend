@@ -15,7 +15,7 @@ export default function ProfilePage() {
         const response = await apiClient.users.getMe();
         setUser(response.data);
       } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.error("Ошибка при загрузке пользователя:", error);
       } finally {
         setLoading(false);
       }

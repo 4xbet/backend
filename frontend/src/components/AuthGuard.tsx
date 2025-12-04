@@ -19,7 +19,7 @@ const AuthGuard = ({ children, adminOnly = false }: AuthGuardProps) => {
 
   useEffect(() => {
     if (isLoading) {
-      return; // Wait for initialization to complete
+      return;
     }
 
     if (!isLoggedIn) {
@@ -28,17 +28,20 @@ const AuthGuard = ({ children, adminOnly = false }: AuthGuardProps) => {
     }
 
     if (adminOnly && user?.role !== 'admin') {
-      router.push('/matches'); // Redirect non-admins from admin routes
+      router.push('/matches');
     }
   }, [isLoggedIn, user, isLoading, adminOnly, router]);
 
-  if (isLoading || !isLoggedIn || (adminOnly && user?.role !== 'admin')) {
-    // You can replace this with a beautiful spinner component
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
       </div>
     );
+  }
+
+  if (!isLoggedIn || (adminOnly && user?.role !== 'admin')) {
+    return null; // Редирект уже произойдет в useEffect
   }
 
   return <>{children}</>;

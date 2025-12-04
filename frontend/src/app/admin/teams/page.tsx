@@ -34,7 +34,7 @@ export default function AdminTeamsPage() {
       const response = await apiClient.teams.getAll();
       setTeams(response.data);
     } catch (error) {
-      console.error("Failed to fetch teams:", error);
+      console.error("Ошибка при загрузке команд:", error);
     } finally {
       setLoading(false);
     }
@@ -45,13 +45,13 @@ export default function AdminTeamsPage() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (confirm("Are you sure you want to delete this team?")) {
+    if (confirm("Вы уверены, что хотите удалить эту команду?")) {
       try {
         await apiClient.teams.delete(id.toString());
-        toast.success("Team deleted successfully!");
+        toast.success("Команда успешно удалена!");
         fetchTeams();
       } catch (error) {
-        toast.error("Failed to delete team.");
+        toast.error("Не удалось удалить команду.");
       }
     }
   };
@@ -63,7 +63,7 @@ export default function AdminTeamsPage() {
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading teams...</div>;
+    return <div className="text-center py-10">Загрузка команд...</div>;
   }
 
   return (
@@ -71,14 +71,14 @@ export default function AdminTeamsPage() {
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Manage Teams</CardTitle>
+            <CardTitle>Управление командами</CardTitle>
             <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={() => setEditingTeam(undefined)}>Add Team</Button>
+                <Button onClick={() => setEditingTeam(undefined)}>Добавить команду</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>{editingTeam ? "Edit Team" : "Add New Team"}</DialogTitle>
+                  <DialogTitle>{editingTeam ? "Редактировать команду" : "Добавить новую команду"}</DialogTitle>
                 </DialogHeader>
                 <TeamForm team={editingTeam} onSuccess={handleSuccess} />
               </DialogContent>
@@ -89,8 +89,8 @@ export default function AdminTeamsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Название</TableHead>
+                  <TableHead>Действия</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -107,14 +107,14 @@ export default function AdminTeamsPage() {
                           setDialogOpen(true);
                         }}
                       >
-                        Edit
+                        Редактировать
                       </Button>
                       <Button
                         variant="destructive"
                         size="sm"
                         onClick={() => handleDelete(team.id)}
                       >
-                        Delete
+                        Удалить
                       </Button>
                     </TableCell>
                   </TableRow>

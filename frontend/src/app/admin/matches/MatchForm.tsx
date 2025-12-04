@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,38 +20,39 @@ interface MatchFormProps {
 }
 
 export default function MatchForm({ match, teams, onSuccess }: MatchFormProps) {
-  const [team1Id, setTeam1Id] = useState(match?.team1_id.toString() || "");
-  const [team2Id, setTeam2Id] = useState(match?.team2_id.toString() || "");
+  const [homeTeamId, setHomeTeamId] = useState(match?.home_team_id?.toString() || "");
+  const [awayTeamId, setAwayTeamId] = useState(match?.away_team_id?.toString() || "");
   const [startTime, setStartTime] = useState(match?.start_time || "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (team1Id === team2Id) {
-      toast.error("Teams must be different.");
+    if (homeTeamId === awayTeamId) {
+      toast.error("Команды должны быть разными.");
       return;
     }
     try {
       const matchData = {
-        team1_id: parseInt(team1Id),
-        team2_id: parseInt(team2Id),
+        home_team_id: parseInt(homeTeamId),
+        away_team_id: parseInt(awayTeamId),
         start_time: new Date(startTime).toISOString(),
       };
-      // For now, there's no update functionality in the API for matches, only create
+      console.log("Отправляемые данные:", matchData); // Для отладки
       await apiClient.matches.create(matchData);
-      toast.success("Match created successfully!");
+      toast.success("Матч успешно создан!");
       onSuccess();
-    } catch (error) {
-      toast.error("Failed to save match.");
+    } catch (error: any) {
+      console.error("Ошибка при создании матча:", error);
+      toast.error("Не удалось сохранить матч: " + (error.response?.data?.detail || error.message));
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label>Team 1</Label>
-        <Select value={team1Id} onValueChange={setTeam1Id}>
+        <Label>Домашняя команда</Label>
+        <Select value={homeTeamId} onValueChange={setHomeTeamId}>
           <SelectTrigger>
-            <SelectValue placeholder="Select Team 1" />
+            <SelectValue placeholder="Выберите домашнюю команду" />
           </SelectTrigger>
           <SelectContent>
             {teams.map((team) => (
@@ -64,10 +64,10 @@ export default function MatchForm({ match, teams, onSuccess }: MatchFormProps) {
         </Select>
       </div>
       <div>
-        <Label>Team 2</Label>
-        <Select value={team2Id} onValueChange={setTeam2Id}>
+        <Label>Гостевая команда</Label>
+        <Select value={awayTeamId} onValueChange={setAwayTeamId}>
           <SelectTrigger>
-            <SelectValue placeholder="Select Team 2" />
+            <SelectValue placeholder="Выберите гостевую команду" />
           </SelectTrigger>
           <SelectContent>
             {teams.map((team) => (
@@ -79,7 +79,7 @@ export default function MatchForm({ match, teams, onSuccess }: MatchFormProps) {
         </Select>
       </div>
       <div>
-        <Label htmlFor="start-time">Start Time</Label>
+        <Label htmlFor="start-time">Время начала</Label>
         <Input
           id="start-time"
           type="datetime-local"
@@ -88,7 +88,7 @@ export default function MatchForm({ match, teams, onSuccess }: MatchFormProps) {
           required
         />
       </div>
-      <Button type="submit">Create Match</Button>
+      <Button type="submit">Создать матч</Button>
     </form>
   );
 }
