@@ -47,8 +47,34 @@ export default function MyBetsPage() {
     return `${team1} против ${team2}`;
   };
 
-  const getTeamName = (teamId: number) => {
-    return teams.find((t) => t.id === teamId)?.name || "Н/Д";
+  const getOutcomeName = (outcome: string) => {
+    switch (outcome) {
+      case "win_home":
+        return "Победа домашней команды";
+      case "win_away":
+        return "Победа гостевой команды";
+      case "draw":
+        return "Ничья";
+      default:
+        return outcome;
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const statusMap: Record<string, { text: string; className: string }> = {
+      pending: { text: "Ожидание", className: "bg-yellow-100 text-yellow-800" },
+      won: { text: "Выиграна", className: "bg-green-100 text-green-800" },
+      lost: { text: "Проиграна", className: "bg-red-100 text-red-800" },
+      cancelled: { text: "Отменена", className: "bg-gray-100 text-gray-800" },
+    };
+
+    const statusInfo = statusMap[status] || { text: status, className: "bg-gray-100 text-gray-800" };
+
+    return (
+      <span className={`px-2 py-1 rounded text-xs ${statusInfo.className}`}>
+        {statusInfo.text}
+      </span>
+    );
   };
 
   if (loading) {
@@ -68,23 +94,30 @@ export default function MyBetsPage() {
                 <TableRow>
                   <TableHead>Матч</TableHead>
                   <TableHead>Ваша ставка</TableHead>
-                  <TableHead>Сумма</TableHead>
+                  <TableHead>Сумма ставки</TableHead>
+                  <TableHead>Коэффициент</TableHead>
+                  <TableHead>Потенциальный выигрыш</TableHead>
                   <TableHead>Статус</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {bets.length > 0 ? (
-                  bets.map((bet) => (
-                    <TableRow key={bet.id}>
-                      <TableCell>{getMatchDescription(bet.match_id)}</TableCell>
-                      <TableCell>{getTeamName(bet.team_id)}</TableCell>
-                      <TableCell>{bet.amount.toFixed(2)}</TableCell>
-                      <TableCell className="capitalize">{bet.status}</TableCell>
-                    </TableRow>
-                  ))
+                  bets.map((bet) => {
+                    const potentialWin = bet.amount_staked * (bet.odds_on_bet || 1);
+                    return (
+                      <TableRow key={bet.id}>
+                        <TableCell>{getMatchDescription(bet.match_id)}</TableCell>
+                        <TableCell>{getOutcomeName(bet.outcome)}</TableCell>
+                        <TableCell>{bet.amount_staked.toFixed(2)} ₽</TableCell>
+                        <TableCell>{bet.odds_on_bet?.toFixed(2) || "Н/Д"}</TableCell>
+                        <TableCell>{potentialWin.toFixed(2)} ₽</TableCell>
+                        <TableCell>{getStatusBadge(bet.status)}</TableCell>
+                      </TableRow>
+                    );
+                  })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center">
+                    <TableCell colSpan={6} className="text-center">
                       Вы еще не сделали ни одной ставки.
                     </TableCell>
                   </TableRow>

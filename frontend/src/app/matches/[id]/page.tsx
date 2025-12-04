@@ -57,18 +57,34 @@ export default function MatchDetailPage() {
       toast.error("Недостаточно средств.");
       return;
     }
+    
+    // Определяем outcome на основе выбранной команды
+    let outcome = "";
+    if (match && teamId === match.home_team_id) {
+      outcome = "win_home";
+    } else if (match && teamId === match.away_team_id) {
+      outcome = "win_away";
+    } else {
+      toast.error("Не удалось определить тип ставки");
+      return;
+    }
+    
     try {
+      // Отправляем данные с правильными полями для bets_service
       await apiClient.bets.create({
         match_id: parseInt(id),
-        team_id: teamId,
-        amount: betAmount,
+        outcome: outcome,           // ← Изменено: team_id → outcome
+        amount_staked: betAmount,   // ← Изменено: amount → amount_staked
       });
       toast.success("Ставка успешно размещена!");
-      // Обновляем баланс кошелька
       const walletRes = await apiClient.users.getWallet();
       setWallet(walletRes.data);
-    } catch (error) {
-      toast.error("Не удалось разместить ставку.");
+      setAmount(""); // Очистить поле ввода
+      setTeamId(null); // Сбросить выбор команды
+    } catch (error: any) {
+      console.error("Полная ошибка ставки:", error);
+      console.error("Ответ сервера:", error.response?.data);
+      toast.error("Не удалось разместить ставку: " + (error.response?.data?.detail || error.message));
     }
   };
 
@@ -108,14 +124,14 @@ export default function MatchDetailPage() {
                     variant={teamId === match.home_team_id ? "default" : "outline"}
                     onClick={() => setTeamId(match.home_team_id)}
                   >
-                    {getTeamName(match.home_team_id)}
+                    {getTeamName(match.home_team_id)} (Победа домашней)
                   </Button>
                   <Button
                     type="button"
                     variant={teamId === match.away_team_id ? "default" : "outline"}
                     onClick={() => setTeamId(match.away_team_id)}
                   >
-                    {getTeamName(match.away_team_id)}
+                    {getTeamName(match.away_team_id)} (Победа гостевой)
                   </Button>
                 </div>
               </div>
