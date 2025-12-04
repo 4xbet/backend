@@ -15,12 +15,12 @@ export interface Team {
 
 export interface Match {
   id: number;
-  home_team_id: number;    // ← Изменено с team1_id
-  away_team_id: number;    // ← Изменено с team2_id
+  home_team_id: number;    
+  away_team_id: number;  
   start_time: string;
-  status?: string;         // ← Добавлено
-  result?: string;         // ← Добавлено
-  odds?: any;              // ← Добавлено для коэффициентов
+  status?: string;         
+  result?: string;         
+  odds?: any;             
 }
 
 export interface Bet {
@@ -31,7 +31,7 @@ export interface Bet {
   status: string;
 }
 
-// API Payloads
+
 export interface RegisterData {
   email: string;
   password: string;
@@ -50,19 +50,30 @@ export interface UpdateTeamData {
 }
 
 export interface CreateMatchData {
-  home_team_id: number;    // ← Изменено с team1_id
-  away_team_id: number;    // ← Изменено с team2_id
+  home_team_id: number;    
+  away_team_id: number;    
   start_time: string;
 }
 
 export interface UpdateOddsData {
-  win_home: number;        // ← Изменено с odds_team1
-  draw: number;            // ← Добавлено
-  win_away: number;        // ← Изменено с odds_team2
+  win_home: number;        
+  draw: number;            
+  win_away: number;        
 }
 
 export interface CreateBetData {
   match_id: number;
-  team_id: number;
-  amount: number;
+  outcome: string;      // ← Изменить team_id на outcome
+  amount_staked: number; // ← Изменить amount на amount_staked
+}
+
+export interface Bet {
+  id: number;
+  match_id: number;
+  outcome: string;      // ← Изменить
+  amount_staked: number; // ← Изменить
+  status: string;
+  odds_on_bet?: number;
+  user_id?: number;
+  created_at?: string;
 }
