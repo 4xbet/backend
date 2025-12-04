@@ -27,21 +27,21 @@ export default function TeamForm({ team, onSuccess }: TeamFormProps) {
     try {
       if (team) {
         await apiClient.teams.update(team.id.toString(), { name });
-        toast.success("Team updated successfully!");
+        toast.success("Команда успешно обновлена!");
       } else {
         await apiClient.teams.create({ name });
-        toast.success("Team created successfully!");
+        toast.success("Команда успешно создана!");
       }
       onSuccess();
     } catch (error) {
-      toast.error("Failed to save team.");
+      toast.error("Не удалось сохранить команду.");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="name">Team Name</Label>
+        <Label htmlFor="name">Название команды</Label>
         <Input
           id="name"
           value={name}
@@ -49,7 +49,7 @@ export default function TeamForm({ team, onSuccess }: TeamFormProps) {
           required
         />
       </div>
-      <Button type="submit">{team ? "Update" : "Create"}</Button>
+      <Button type="submit">{team ? "Обновить" : "Создать"}</Button>
     </form>
   );
 }

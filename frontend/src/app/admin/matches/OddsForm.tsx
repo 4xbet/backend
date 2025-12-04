@@ -13,48 +13,65 @@ interface OddsFormProps {
 }
 
 export default function OddsForm({ match, onSuccess }: OddsFormProps) {
-  const [oddsTeam1, setOddsTeam1] = useState("1.0");
-  const [oddsTeam2, setOddsTeam2] = useState("1.0");
+  const [winHome, setWinHome] = useState("1.0");
+  const [draw, setDraw] = useState("2.0");
+  const [winAway, setWinAway] = useState("1.0");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await apiClient.matches.updateOdds(match.id.toString(), {
-        odds_team1: parseFloat(oddsTeam1),
-        odds_team2: parseFloat(oddsTeam2),
+        win_home: parseFloat(winHome),
+        draw: parseFloat(draw),
+        win_away: parseFloat(winAway),
       });
-      toast.success("Odds updated successfully!");
+      toast.success("Коэффициенты успешно обновлены!");
       onSuccess();
-    } catch (error) {
-      toast.error("Failed to update odds.");
+    } catch (error: any) {
+      console.error("Ошибка обновления коэффициентов:", error);
+      toast.error("Не удалось обновить коэффициенты: " + (error.response?.data?.detail || error.message));
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="odds-team1">Odds Team 1</Label>
+        <Label htmlFor="win-home">Победа домашней команды</Label>
         <Input
-          id="odds-team1"
+          id="win-home"
           type="number"
-          value={oddsTeam1}
-          onChange={(e) => setOddsTeam1(e.target.value)}
+          value={winHome}
+          onChange={(e) => setWinHome(e.target.value)}
           step="0.01"
+          min="1.0"
           required
         />
       </div>
       <div>
-        <Label htmlFor="odds-team2">Odds Team 2</Label>
+        <Label htmlFor="draw">Ничья</Label>
         <Input
-          id="odds-team2"
+          id="draw"
           type="number"
-          value={oddsTeam2}
-          onChange={(e) => setOddsTeam2(e.target.value)}
+          value={draw}
+          onChange={(e) => setDraw(e.target.value)}
           step="0.01"
+          min="1.0"
           required
         />
       </div>
-      <Button type="submit">Update Odds</Button>
+      <div>
+        <Label htmlFor="win-away">Победа гостевой команды</Label>
+        <Input
+          id="win-away"
+          type="number"
+          value={winAway}
+          onChange={(e) => setWinAway(e.target.value)}
+          step="0.01"
+          min="1.0"
+          required
+        />
+      </div>
+      <Button type="submit">Обновить коэффициенты</Button>
     </form>
   );
 }

@@ -31,7 +31,7 @@ export default function MyBetsPage() {
         setMatches(matchesRes.data);
         setTeams(teamsRes.data);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        console.error("Ошибка при загрузке данных:", error);
       } finally {
         setLoading(false);
       }
@@ -41,14 +41,14 @@ export default function MyBetsPage() {
 
   const getMatchDescription = (matchId: number) => {
     const match = matches.find((m) => m.id === matchId);
-    if (!match) return "N/A";
-    const team1 = teams.find((t) => t.id === match.team1_id)?.name || "N/A";
-    const team2 = teams.find((t) => t.id === match.team2_id)?.name || "N/A";
-    return `${team1} vs ${team2}`;
+    if (!match) return "Н/Д";
+    const team1 = teams.find((t) => t.id === match.home_team_id)?.name || "Н/Д";
+    const team2 = teams.find((t) => t.id === match.away_team_id)?.name || "Н/Д";
+    return `${team1} против ${team2}`;
   };
 
   const getTeamName = (teamId: number) => {
-    return teams.find((t) => t.id === teamId)?.name || "N/A";
+    return teams.find((t) => t.id === teamId)?.name || "Н/Д";
   };
 
   if (loading) {

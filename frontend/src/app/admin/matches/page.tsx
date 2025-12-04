@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription, // ← Добавить этот импорт
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import apiClient from "@/libraries/apiClient";
@@ -40,7 +41,7 @@ export default function AdminMatchesPage() {
       setMatches(matchesRes.data);
       setTeams(teamsRes.data);
     } catch (error) {
-      console.error("Failed to fetch matches or teams:", error);
+      console.error("Ошибка при загрузке матчей или команд:", error);
     } finally {
       setLoading(false);
     }
@@ -58,7 +59,7 @@ export default function AdminMatchesPage() {
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading matches...</div>;
+    return <div className="text-center py-10">Загрузка матчей...</div>;
   }
 
   return (
@@ -66,14 +67,17 @@ export default function AdminMatchesPage() {
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Manage Matches</CardTitle>
+            <CardTitle>Управление матчами</CardTitle>
             <Dialog open={isMatchDialogOpen} onOpenChange={setMatchDialogOpen}>
               <DialogTrigger asChild>
-                <Button>Add Match</Button>
+                <Button>Добавить матч</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Add New Match</DialogTitle>
+                  <DialogTitle>Добавить новый матч</DialogTitle>
+                  <DialogDescription> {/* ← Теперь этот компонент доступен */}
+                    Заполните форму для создания нового матча
+                  </DialogDescription>
                 </DialogHeader>
                 <MatchForm teams={teams} onSuccess={handleSuccess} />
               </DialogContent>
@@ -84,9 +88,9 @@ export default function AdminMatchesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
-                  <TableHead>Teams</TableHead>
-                  <TableHead>Start Time</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Команды</TableHead>
+                  <TableHead>Время начала</TableHead>
+                  <TableHead>Действия</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -94,8 +98,8 @@ export default function AdminMatchesPage() {
                   <TableRow key={match.id}>
                     <TableCell>{match.id}</TableCell>
                     <TableCell>
-                      {teams.find((t) => t.id === match.team1_id)?.name || "N/A"} vs{" "}
-                      {teams.find((t) => t.id === match.team2_id)?.name || "N/A"}
+                      {teams.find((t) => t.id === match.home_team_id)?.name || "Н/Д"} против{" "}
+                      {teams.find((t) => t.id === match.away_team_id)?.name || "Н/Д"}
                     </TableCell>
                     <TableCell>
                       {new Date(match.start_time).toLocaleString()}
@@ -109,7 +113,7 @@ export default function AdminMatchesPage() {
                           setOddsDialogOpen(true);
                         }}
                       >
-                        Edit Odds
+                        Редактировать коэффициенты
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -122,7 +126,10 @@ export default function AdminMatchesPage() {
       <Dialog open={isOddsDialogOpen} onOpenChange={setOddsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Odds</DialogTitle>
+            <DialogTitle>Редактировать коэффициенты</DialogTitle>
+            <DialogDescription> {}
+              Установите коэффициенты для этого матча
+            </DialogDescription>
           </DialogHeader>
           {selectedMatch && <OddsForm match={selectedMatch} onSuccess={handleSuccess} />}
         </DialogContent>
