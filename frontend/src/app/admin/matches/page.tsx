@@ -1,28 +1,33 @@
-"use client";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription, // ← Добавить этот импорт
-} from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/libraries/apiClient";
-import { Match, Team } from "@/types";
-import MatchForm from "./MatchForm";
-import OddsForm from "./OddsForm";
+  DialogDescription,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import apiClient from '@/libraries/apiClient';
+import { toast } from 'sonner';
+import { Match, Team } from '@/types';
+import MatchForm from './MatchForm';
+import OddsForm from './OddsForm';
 
 export default function AdminMatchesPage() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -31,17 +36,15 @@ export default function AdminMatchesPage() {
   const [isMatchDialogOpen, setMatchDialogOpen] = useState(false);
   const [isOddsDialogOpen, setOddsDialogOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<Match | undefined>(undefined);
+  const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   const fetchMatchesAndTeams = async () => {
     try {
-      const [matchesRes, teamsRes] = await Promise.all([
-        apiClient.matches.getAll(),
-        apiClient.teams.getAll(),
-      ]);
+      const [matchesRes, teamsRes] = await Promise.all([apiClient.matches.getAll(), apiClient.teams.getAll()]);
       setMatches(matchesRes.data);
       setTeams(teamsRes.data);
     } catch (error) {
-      console.error("Ошибка при загрузке матчей или команд:", error);
+      console.error('Ошибка при загрузке матчей или команд:', error);
     } finally {
       setLoading(false);
     }
@@ -56,6 +59,31 @@ export default function AdminMatchesPage() {
     setOddsDialogOpen(false);
     setSelectedMatch(undefined);
     fetchMatchesAndTeams();
+  };
+
+  const handleCompleteMatch = async (matchId: number) => {
+    try {
+      await apiClient.admin.completeMatch(matchId);
+      toast.success('Матч успешно завершен!');
+      fetchMatchesAndTeams();
+    } catch (error) {
+      console.error('Ошибка при завершении матча:', error);
+      toast.error('Не удалось завершить матч.');
+    } finally {
+      setConfirmDialogOpen(false);
+      setSelectedMatch(undefined);
+    }
+  };
+
+  const handleStartMatch = async (matchId: number) => {
+    try {
+      await apiClient.admin.startMatch(matchId);
+      toast.success('Матч успешно начат!');
+      fetchMatchesAndTeams();
+    } catch (error) {
+      console.error('Ошибка при начале матча:', error);
+      toast.error('Не удалось начать матч.');
+    }
   };
 
   if (loading) {
@@ -75,7 +103,9 @@ export default function AdminMatchesPage() {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Добавить новый матч</DialogTitle>
-                  <DialogDescription> {/* ← Теперь этот компонент доступен */}
+                  <DialogDescription>
+                    {' '}
+                    {/* ← Теперь этот компонент доступен */}
                     Заполните форму для создания нового матча
                   </DialogDescription>
                 </DialogHeader>
@@ -90,6 +120,7 @@ export default function AdminMatchesPage() {
                   <TableHead>ID</TableHead>
                   <TableHead>Команды</TableHead>
                   <TableHead>Время начала</TableHead>
+                  <TableHead>Статус</TableHead>
                   <TableHead>Действия</TableHead>
                 </TableRow>
               </TableHeader>
@@ -98,13 +129,12 @@ export default function AdminMatchesPage() {
                   <TableRow key={match.id}>
                     <TableCell>{match.id}</TableCell>
                     <TableCell>
-                      {teams.find((t) => t.id === match.home_team_id)?.name || "Н/Д"} против{" "}
-                      {teams.find((t) => t.id === match.away_team_id)?.name || "Н/Д"}
+                      {teams.find((t) => t.id === match.home_team_id)?.name || 'Н/Д'} против{' '}
+                      {teams.find((t) => t.id === match.away_team_id)?.name || 'Н/Д'}
                     </TableCell>
-                    <TableCell>
-                      {new Date(match.start_time).toLocaleString()}
-                    </TableCell>
-                    <TableCell>
+                    <TableCell>{new Date(match.start_time).toLocaleString()}</TableCell>
+                    <TableCell>{match.status}</TableCell>
+                    <TableCell className="space-x-2">
                       <Button
                         variant="outline"
                         size="sm"
@@ -113,8 +143,37 @@ export default function AdminMatchesPage() {
                           setOddsDialogOpen(true);
                         }}
                       >
-                        Редактировать коэффициенты
+                        Коэфф.
                       </Button>
+                      {match.status === 'scheduled' && (
+                        <Button variant="default" size="sm" onClick={() => handleStartMatch(match.id)}>
+                          Начать
+                        </Button>
+                      )}
+                      {match.status === 'active' && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="sm" onClick={() => setSelectedMatch(match)}>
+                              Завершить
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Завершить матч принудительно?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Это действие нельзя отменить. Победитель будет выбран случайным образом, а выигрыши
+                                распределены между игроками, сделавшими ставки на него.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Отмена</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => selectedMatch && handleCompleteMatch(selectedMatch.id)}>
+                                Подтвердить
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -127,7 +186,9 @@ export default function AdminMatchesPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Редактировать коэффициенты</DialogTitle>
-            <DialogDescription> {}
+            <DialogDescription>
+              {' '}
+              {}
               Установите коэффициенты для этого матча
             </DialogDescription>
           </DialogHeader>

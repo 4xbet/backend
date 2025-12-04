@@ -83,7 +83,29 @@ async def update_user_wallet(
         db, user_id=current_user.id, amount=balance_update.amount
     )
 
+@router.patch("/users/{user_id}/wallet", response_model=schemas.Wallet)
+async def update_specific_user_wallet(
+    user_id: int,
+    balance_update: BalanceUpdate,
+    db: AsyncSession = Depends(get_db),
+):
 
+    updated_wallet = await crud.update_wallet_balance(
+        db, user_id=user_id, amount=balance_update.amount
+    )
+    
+    if not updated_wallet:
+        raise HTTPException(status_code=404, detail="User wallet not found")
+        
+    return updated_wallet
+
+
+
+@router.get("/auth/validate")
+async def validate_token(current_user: models.User = Depends(get_current_user)):
+    return {"status": "ok"}
+ 
+ 
 @app.get("/")
 async def health_check():
     return {"status": "ok"}

@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from . import models, schemas
 import httpx
 import os
+from sqlalchemy import update 
 
 USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://user_service:80")
 
@@ -24,6 +25,11 @@ async def get_bets_by_user(db: AsyncSession, user_id: int):
     return result.scalars().all()
 
 
+async def get_bets_by_match(db: AsyncSession, match_id: int):
+    result = await db.execute(select(models.Bet).filter(models.Bet.match_id == match_id))
+    return result.scalars().all()
+ 
+ 
 async def verify_user_balance(user_id: int, amount: float, token: str):
     async with httpx.AsyncClient() as client:
         headers = {"Authorization": f"Bearer {token}"}
@@ -40,3 +46,22 @@ async def create_transaction(db: AsyncSession, transaction: schemas.TransactionC
     await db.commit()
     await db.refresh(db_transaction)
     return db_transaction
+
+async def settle_bets(db: AsyncSession, match_id: int, winning_outcome: str):
+    # 1. Обновляем статус выигравших ставок
+    await db.execute(
+        update(models.Bet)
+        .where(models.Bet.match_id == match_id)
+        .where(models.Bet.outcome == winning_outcome)
+        .values(status="won")
+    )
+    
+    # 2. Обновляем статус проигравших ставок (все остальные ставки этого матча)
+    await db.execute(
+        update(models.Bet)
+        .where(models.Bet.match_id == match_id)
+        .where(models.Bet.outcome != winning_outcome)
+        .values(status="lost")
+    )
+    
+    await db.commit()

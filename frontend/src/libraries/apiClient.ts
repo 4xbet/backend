@@ -74,6 +74,9 @@ const apiClient = {
     create: (data: CreateBetData) => axiosInstance.post<Bet>('/api/bets/', data),
     getMyBets: () => axiosInstance.get<Bet[]>('/api/bets/'),
   },
+  admin: {
+    completeMatch: (matchId: number) => axiosInstance.post(`/api/matches/${matchId}/complete`),
+    startMatch: (matchId: number) => axiosInstance.post(`/api/matches/${matchId}/start`),
+  },
 };
-
 export default apiClient;

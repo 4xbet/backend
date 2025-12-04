@@ -24,6 +24,9 @@ class Bet(BetBase):
         from_attributes = True
 
 
+class MatchOutcome(BaseModel):
+    winning_outcome: str 
+
 class TransactionBase(BaseModel):
     wallet_id: int
     amount: float

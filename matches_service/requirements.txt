@@ -4,6 +4,7 @@ sqlalchemy
 psycopg2-binary
 pydantic-settings
 asyncpg
+httpx
 python-jose[cryptography]
 fastapi-jwt-auth
 fastapi-cors

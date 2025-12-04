@@ -21,6 +21,8 @@ class Match(Base):
     start_time = Column(DateTime(timezone=True), nullable=False)
     status = Column(String, nullable=False, default="scheduled")
     result = Column(String, nullable=True)
+    winner_id = Column(Integer, nullable=True)
+    completed_time = Column(DateTime(timezone=True), nullable=True)
     odds = relationship("Odds", back_populates="match", uselist=False)
 
 

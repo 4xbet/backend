@@ -30,6 +30,14 @@ async def startup():
         await conn.run_sync(models.Base.metadata.create_all)
 
 
+def is_admin(user: auth.User = Depends(auth.get_current_user)):
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=403, detail="The user doesn't have enough privileges"
+        )
+    return user
+ 
+ 
 @router.post("/bets/", response_model=schemas.Bet)
 async def create_bet(
     bet: schemas.BetCreate,
@@ -96,6 +104,22 @@ async def read_bets(
 ):
     return await crud.get_bets_by_user(db=db, user_id=current_user.id)
 
+
+@router.get("/matches/{match_id}/bets/", response_model=List[schemas.Bet], dependencies=[Depends(is_admin)])
+async def read_bets_for_match(
+    match_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    return await crud.get_bets_by_match(db=db, match_id=match_id)
+ 
+@router.post("/matches/{match_id}/settle", dependencies=[Depends(is_admin)])
+async def settle_bets_for_match(
+    match_id: int,
+    outcome_data: schemas.MatchOutcome,
+    db: AsyncSession = Depends(get_db),
+):
+    await crud.settle_bets(db, match_id, outcome_data.winning_outcome)
+    return {"status": "bets settled"}
 
 @app.get("/")
 async def health_check():

@@ -46,6 +46,8 @@ class Match(MatchBase):
     id: int
     status: str
     result: Optional[str]
+    winner_id: Optional[int]
+    completed_time: Optional[datetime]
     odds: Optional[Odds]
 
     class Config:

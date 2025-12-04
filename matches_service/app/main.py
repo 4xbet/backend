@@ -74,8 +74,41 @@ async def update_odds_for_match(
     match_id: int, odds: schemas.OddsCreate, db: AsyncSession = Depends(get_db)
 ):
     return await crud.update_odds(db=db, match_id=match_id, odds=odds)
-
-
+ 
+ 
+@router.post(
+    "/matches/{match_id}/complete",
+    response_model=schemas.Match,
+    dependencies=[Depends(is_admin)],
+)
+async def complete_match(
+    match_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: auth.User = Depends(is_admin),
+):
+    try:
+        return await crud.complete_match(db=db, match_id=match_id, token=user.token)
+    except Exception as e:
+        logger.error(f"Error completing match {match_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+ 
+ 
+@router.post(
+    "/matches/{match_id}/start",
+    response_model=schemas.Match,
+    dependencies=[Depends(is_admin)],
+)
+async def start_match(
+    match_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await crud.start_match(db=db, match_id=match_id)
+    except Exception as e:
+        logger.error(f"Error starting match {match_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+ 
+ 
 @app.get("/")
 async def health_check():
     return {"status": "ok"}
