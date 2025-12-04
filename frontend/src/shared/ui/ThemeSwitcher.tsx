@@ -1,7 +1,7 @@
 'use client';
 
-import { useThemeStore } from '@/store/themeStore';
 import AnimatedButton from './AnimatedButton';
+import { useThemeStore } from './themeStore';
 
 const ThemeSwitcher = () => {
   const { isDarkMode, toggleTheme } = useThemeStore();

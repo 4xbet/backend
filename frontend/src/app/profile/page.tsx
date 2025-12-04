@@ -1,9 +1,9 @@
-"use client";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/shared/api";
-import { User } from "@/shared/types";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import apiClient from '@/shared/api';
+import { User } from '@/shared/types';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -15,7 +15,7 @@ export default function ProfilePage() {
         const response = await apiClient.users.getMe();
         setUser(response.data);
       } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.error('Failed to fetch user:', error);
       } finally {
         setLoading(false);
       }

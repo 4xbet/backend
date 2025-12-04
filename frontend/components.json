@@ -12,9 +12,9 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@/components",
-    "utils": "@/libraries/utils",
-    "ui": "@/components/ui",
+    "components": "@/shared",
+    "utils": "@/shared/hooks/tw-merge",
+    "ui": "@/shared/ui",
     "lib": "@/libraries",
     "hooks": "@/shared/hooks"
   },

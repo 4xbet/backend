@@ -1,10 +1,10 @@
-"use client";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/shared/api";
-import { Match, Team } from "@/shared/types";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import apiClient from '@/shared/api';
+import { Match, Team } from '@/shared/types';
 
 export default function MatchesPage() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -14,22 +14,19 @@ export default function MatchesPage() {
   useEffect(() => {
     const fetchMatchesAndTeams = async () => {
       try {
-        const [matchesRes, teamsRes] = await Promise.all([
-          apiClient.matches.getAll(),
-          apiClient.teams.getAll(),
-        ]);
+        const [matchesRes, teamsRes] = await Promise.all([apiClient.matches.getAll(), apiClient.teams.getAll()]);
         if (Array.isArray(matchesRes.data)) {
           setMatches(matchesRes.data);
         } else {
-          console.error("Fetched matches data is not an array:", matchesRes.data);
+          console.error('Fetched matches data is not an array:', matchesRes.data);
         }
         if (Array.isArray(teamsRes.data)) {
           setTeams(teamsRes.data);
         } else {
-          console.error("Fetched teams data is not an array:", teamsRes.data);
+          console.error('Fetched teams data is not an array:', teamsRes.data);
         }
       } catch (error) {
-        console.error("Failed to fetch matches or teams:", error);
+        console.error('Failed to fetch matches or teams:', error);
       } finally {
         setLoading(false);
       }
@@ -68,12 +65,12 @@ export default function MatchesPage() {
             <Link href={`/matches/${match.id}`} passHref>
               <Card className="hover:shadow-lg transition-shadow duration-300">
                 <CardHeader>
-                  <CardTitle>{getTeamName(match.team1_id)} vs {getTeamName(match.team2_id)}</CardTitle>
+                  <CardTitle>
+                    {getTeamName(match.team1_id)} vs {getTeamName(match.team2_id)}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-500">
-                    {new Date(match.start_time).toLocaleString()}
-                  </p>
+                  <p className="text-sm text-gray-500">{new Date(match.start_time).toLocaleString()}</p>
                 </CardContent>
               </Card>
             </Link>

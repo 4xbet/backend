@@ -1,27 +1,14 @@
-"use client";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/shared/api";
-import { Match, Team } from "@/shared/types";
-import MatchForm from "./MatchForm";
-import OddsForm from "./OddsForm";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
+import { Button } from '@/shared/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/ui/dialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import apiClient from '@/shared/api';
+import { Match, Team } from '@/shared/types';
+import MatchForm from './MatchForm';
+import OddsForm from './OddsForm';
 
 export default function AdminMatchesPage() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -33,14 +20,11 @@ export default function AdminMatchesPage() {
 
   const fetchMatchesAndTeams = async () => {
     try {
-      const [matchesRes, teamsRes] = await Promise.all([
-        apiClient.matches.getAll(),
-        apiClient.teams.getAll(),
-      ]);
+      const [matchesRes, teamsRes] = await Promise.all([apiClient.matches.getAll(), apiClient.teams.getAll()]);
       setMatches(matchesRes.data);
       setTeams(teamsRes.data);
     } catch (error) {
-      console.error("Failed to fetch matches or teams:", error);
+      console.error('Failed to fetch matches or teams:', error);
     } finally {
       setLoading(false);
     }
@@ -94,12 +78,10 @@ export default function AdminMatchesPage() {
                   <TableRow key={match.id}>
                     <TableCell>{match.id}</TableCell>
                     <TableCell>
-                      {teams.find((t) => t.id === match.team1_id)?.name || "N/A"} vs{" "}
-                      {teams.find((t) => t.id === match.team2_id)?.name || "N/A"}
+                      {teams.find((t) => t.id === match.team1_id)?.name || 'N/A'} vs{' '}
+                      {teams.find((t) => t.id === match.team2_id)?.name || 'N/A'}
                     </TableCell>
-                    <TableCell>
-                      {new Date(match.start_time).toLocaleString()}
-                    </TableCell>
+                    <TableCell>{new Date(match.start_time).toLocaleString()}</TableCell>
                     <TableCell>
                       <Button
                         variant="outline"

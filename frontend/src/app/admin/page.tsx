@@ -1,16 +1,13 @@
-"use client";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+'use client';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
 
 export default function AdminDashboardPage() {
   return (
     <div className="container mx-auto py-10">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <Card>
           <CardHeader>
             <CardTitle>Панель администратора</CardTitle>

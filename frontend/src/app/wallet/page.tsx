@@ -1,17 +1,17 @@
-"use client";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/shared/api";
-import toast from "react-hot-toast";
-import { Wallet } from "@/shared/types";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import apiClient from '@/shared/api';
+import toast from 'react-hot-toast';
+import { Wallet } from '@/shared/types';
 
 export default function WalletPage() {
   const [wallet, setWallet] = useState<Wallet | null>(null);
-  const [amount, setAmount] = useState<string>("");
+  const [amount, setAmount] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchWallet = async () => {
@@ -19,7 +19,7 @@ export default function WalletPage() {
       const response = await apiClient.users.getWallet();
       setWallet(response.data);
     } catch (error) {
-      console.error("Failed to fetch wallet:", error);
+      console.error('Failed to fetch wallet:', error);
     } finally {
       setLoading(false);
     }
@@ -33,16 +33,16 @@ export default function WalletPage() {
     e.preventDefault();
     const topUpAmount = parseFloat(amount);
     if (isNaN(topUpAmount) || topUpAmount <= 0) {
-      toast.error("Пожалуйста, введите действительную сумму.");
+      toast.error('Пожалуйста, введите действительную сумму.');
       return;
     }
     try {
       await apiClient.users.updateWallet({ amount: topUpAmount });
-      toast.success("Кошелек успешно пополнен!");
+      toast.success('Кошелек успешно пополнен!');
       fetchWallet(); // Refresh wallet balance
-      setAmount("");
+      setAmount('');
     } catch (error) {
-      toast.error("Не удалось пополнить кошелек.");
+      toast.error('Не удалось пополнить кошелек.');
     }
   };
 
@@ -60,9 +60,7 @@ export default function WalletPage() {
           <CardContent>
             <div className="mb-6">
               <p className="text-lg font-semibold">Текущий баланс:</p>
-              <p className="text-3xl">
-                {wallet ? wallet.balance.toFixed(2) : "0.00"}
-              </p>
+              <p className="text-3xl">{wallet ? wallet.balance.toFixed(2) : '0.00'}</p>
             </div>
             <form onSubmit={handleTopUp} className="space-y-4">
               <h2 className="text-xl font-semibold">Пополнить</h2>

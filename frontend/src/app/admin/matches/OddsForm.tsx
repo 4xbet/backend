@@ -1,11 +1,11 @@
-"use client";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import apiClient from "@/shared/api";
-import toast from "react-hot-toast";
-import { Match } from "@/shared/types";
+'use client';
+import { useState } from 'react';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import apiClient from '@/shared/api';
+import toast from 'react-hot-toast';
+import { Match } from '@/shared/types';
 
 interface OddsFormProps {
   match: Match;
@@ -13,8 +13,8 @@ interface OddsFormProps {
 }
 
 export default function OddsForm({ match, onSuccess }: OddsFormProps) {
-  const [oddsTeam1, setOddsTeam1] = useState("1.0");
-  const [oddsTeam2, setOddsTeam2] = useState("1.0");
+  const [oddsTeam1, setOddsTeam1] = useState('1.0');
+  const [oddsTeam2, setOddsTeam2] = useState('1.0');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,10 +23,10 @@ export default function OddsForm({ match, onSuccess }: OddsFormProps) {
         odds_team1: parseFloat(oddsTeam1),
         odds_team2: parseFloat(oddsTeam2),
       });
-      toast.success("Odds updated successfully!");
+      toast.success('Odds updated successfully!');
       onSuccess();
     } catch (error) {
-      toast.error("Failed to update odds.");
+      toast.error('Failed to update odds.');
     }
   };
 

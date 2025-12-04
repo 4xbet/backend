@@ -1,17 +1,10 @@
-"use client";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/shared/api";
-import { Bet, Match, Team } from "@/shared/types";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import apiClient from '@/shared/api';
+import { Bet, Match, Team } from '@/shared/types';
 
 export default function MyBetsPage() {
   const [bets, setBets] = useState<Bet[]>([]);
@@ -31,7 +24,7 @@ export default function MyBetsPage() {
         setMatches(matchesRes.data);
         setTeams(teamsRes.data);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
@@ -41,14 +34,14 @@ export default function MyBetsPage() {
 
   const getMatchDescription = (matchId: number) => {
     const match = matches.find((m) => m.id === matchId);
-    if (!match) return "N/A";
-    const team1 = teams.find((t) => t.id === match.team1_id)?.name || "N/A";
-    const team2 = teams.find((t) => t.id === match.team2_id)?.name || "N/A";
+    if (!match) return 'N/A';
+    const team1 = teams.find((t) => t.id === match.team1_id)?.name || 'N/A';
+    const team2 = teams.find((t) => t.id === match.team2_id)?.name || 'N/A';
     return `${team1} vs ${team2}`;
   };
 
   const getTeamName = (teamId: number) => {
-    return teams.find((t) => t.id === teamId)?.name || "N/A";
+    return teams.find((t) => t.id === teamId)?.name || 'N/A';
   };
 
   if (loading) {

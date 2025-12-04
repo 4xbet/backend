@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { cn } from '@/libraries/utils';
+import { cn } from '@/shared/hooks/tw-merge';
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (

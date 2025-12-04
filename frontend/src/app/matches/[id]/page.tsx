@@ -1,14 +1,14 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/shared/api";
-import toast from "react-hot-toast";
-import { Match, Team, Wallet } from "@/shared/types";
+'use client';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import apiClient from '@/shared/api';
+import toast from 'react-hot-toast';
+import { Match, Team, Wallet } from '@/shared/types';
 
 export default function MatchDetailPage() {
   const params = useParams();
@@ -16,7 +16,7 @@ export default function MatchDetailPage() {
   const [match, setMatch] = useState<Match | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [wallet, setWallet] = useState<Wallet | null>(null);
-  const [amount, setAmount] = useState<string>("");
+  const [amount, setAmount] = useState<string>('');
   const [teamId, setTeamId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -33,7 +33,7 @@ export default function MatchDetailPage() {
           setTeams(teamsRes.data);
           setWallet(walletRes.data);
         } catch (error) {
-          console.error("Failed to fetch match details:", error);
+          console.error('Failed to fetch match details:', error);
         } finally {
           setLoading(false);
         }
@@ -49,12 +49,12 @@ export default function MatchDetailPage() {
   const handleBet = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!teamId || !amount) {
-      toast.error("Please select a team and enter an amount.");
+      toast.error('Please select a team and enter an amount.');
       return;
     }
     const betAmount = parseFloat(amount);
     if (wallet && wallet.balance < betAmount) {
-      toast.error("Insufficient balance.");
+      toast.error('Insufficient balance.');
       return;
     }
     try {
@@ -63,12 +63,12 @@ export default function MatchDetailPage() {
         team_id: teamId,
         amount: betAmount,
       });
-      toast.success("Bet placed successfully!");
+      toast.success('Bet placed successfully!');
       // Refresh wallet balance
       const walletRes = await apiClient.users.getWallet();
       setWallet(walletRes.data);
     } catch (error) {
-      toast.error("Failed to place bet.");
+      toast.error('Failed to place bet.');
     }
   };
 
@@ -91,8 +91,7 @@ export default function MatchDetailPage() {
           </CardHeader>
           <CardContent>
             <p>
-              <strong>Start Time:</strong>{" "}
-              {new Date(match.start_time).toLocaleString()}
+              <strong>Start Time:</strong> {new Date(match.start_time).toLocaleString()}
             </p>
             <div className="my-4">
               <p>
@@ -105,14 +104,14 @@ export default function MatchDetailPage() {
                 <div className="flex gap-4">
                   <Button
                     type="button"
-                    variant={teamId === match.team1_id ? "default" : "outline"}
+                    variant={teamId === match.team1_id ? 'default' : 'outline'}
                     onClick={() => setTeamId(match.team1_id)}
                   >
                     {getTeamName(match.team1_id)}
                   </Button>
                   <Button
                     type="button"
-                    variant={teamId === match.team2_id ? "default" : "outline"}
+                    variant={teamId === match.team2_id ? 'default' : 'outline'}
                     onClick={() => setTeamId(match.team2_id)}
                   >
                     {getTeamName(match.team2_id)}

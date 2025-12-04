@@ -1,27 +1,14 @@
-"use client";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/shared/api";
-import { Team } from "@/shared/types";
-import TeamForm from "./TeamForm";
-import toast from "react-hot-toast";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
+import { Button } from '@/shared/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/ui/dialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import apiClient from '@/shared/api';
+import { Team } from '@/shared/types';
+import TeamForm from './TeamForm';
+import toast from 'react-hot-toast';
 
 export default function AdminTeamsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
@@ -34,7 +21,7 @@ export default function AdminTeamsPage() {
       const response = await apiClient.teams.getAll();
       setTeams(response.data);
     } catch (error) {
-      console.error("Failed to fetch teams:", error);
+      console.error('Failed to fetch teams:', error);
     } finally {
       setLoading(false);
     }
@@ -45,13 +32,13 @@ export default function AdminTeamsPage() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (confirm("Are you sure you want to delete this team?")) {
+    if (confirm('Are you sure you want to delete this team?')) {
       try {
         await apiClient.teams.delete(id.toString());
-        toast.success("Team deleted successfully!");
+        toast.success('Team deleted successfully!');
         fetchTeams();
       } catch (error) {
-        toast.error("Failed to delete team.");
+        toast.error('Failed to delete team.');
       }
     }
   };
@@ -78,7 +65,7 @@ export default function AdminTeamsPage() {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>{editingTeam ? "Edit Team" : "Add New Team"}</DialogTitle>
+                  <DialogTitle>{editingTeam ? 'Edit Team' : 'Add New Team'}</DialogTitle>
                 </DialogHeader>
                 <TeamForm team={editingTeam} onSuccess={handleSuccess} />
               </DialogContent>
@@ -109,11 +96,7 @@ export default function AdminTeamsPage() {
                       >
                         Edit
                       </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(team.id)}
-                      >
+                      <Button variant="destructive" size="sm" onClick={() => handleDelete(team.id)}>
                         Delete
                       </Button>
                     </TableCell>

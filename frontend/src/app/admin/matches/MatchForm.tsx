@@ -1,18 +1,12 @@
-"use client";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import apiClient from "@/shared/api";
-import toast from "react-hot-toast";
-import { Match, Team } from "@/shared/types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+'use client';
+import { useState } from 'react';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import apiClient from '@/shared/api';
+import toast from 'react-hot-toast';
+import { Match, Team } from '@/shared/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 
 interface MatchFormProps {
   match?: Match;
@@ -21,14 +15,14 @@ interface MatchFormProps {
 }
 
 export default function MatchForm({ match, teams, onSuccess }: MatchFormProps) {
-  const [team1Id, setTeam1Id] = useState(match?.team1_id.toString() || "");
-  const [team2Id, setTeam2Id] = useState(match?.team2_id.toString() || "");
-  const [startTime, setStartTime] = useState(match?.start_time || "");
+  const [team1Id, setTeam1Id] = useState(match?.team1_id.toString() || '');
+  const [team2Id, setTeam2Id] = useState(match?.team2_id.toString() || '');
+  const [startTime, setStartTime] = useState(match?.start_time || '');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (team1Id === team2Id) {
-      toast.error("Teams must be different.");
+      toast.error('Teams must be different.');
       return;
     }
     try {
@@ -39,10 +33,10 @@ export default function MatchForm({ match, teams, onSuccess }: MatchFormProps) {
       };
       // For now, there's no update functionality in the API for matches, only create
       await apiClient.matches.create(matchData);
-      toast.success("Match created successfully!");
+      toast.success('Match created successfully!');
       onSuccess();
     } catch (error) {
-      toast.error("Failed to save match.");
+      toast.error('Failed to save match.');
     }
   };
 

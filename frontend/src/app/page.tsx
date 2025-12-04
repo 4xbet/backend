@@ -1,10 +1,10 @@
-"use client";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Button } from "@/shared/ui/button";
-import { ArrowRight, BarChart2, Ticket, User } from "lucide-react";
-import useAuthStore from "@/entities/user/model/store";
+'use client';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
+import { ArrowRight, BarChart2, Ticket, User } from 'lucide-react';
+import useAuthStore from '@/entities/user/model/store';
 
 export default function HomePage() {
   const { isLoggedIn } = useAuthStore();
@@ -17,28 +17,28 @@ export default function HomePage() {
       transition: {
         delay: i * 0.2,
         duration: 0.5,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     }),
   };
 
   const features = [
     {
-      title: "Live Матчи",
-      description: "Следите за результатами в реальном времени.",
-      href: "/matches",
+      title: 'Live Матчи',
+      description: 'Следите за результатами в реальном времени.',
+      href: '/matches',
       icon: <BarChart2 className="h-8 w-8 text-primary" />,
     },
     {
-      title: "Ваши Ставки",
-      description: "Просматривайте историю и текущие ставки.",
-      href: "/my-bets",
+      title: 'Ваши Ставки',
+      description: 'Просматривайте историю и текущие ставки.',
+      href: '/my-bets',
       icon: <Ticket className="h-8 w-8 text-primary" />,
     },
     {
-      title: "Профиль",
-      description: "Управляйте своим аккаунтом и кошельком.",
-      href: "/profile",
+      title: 'Профиль',
+      description: 'Управляйте своим аккаунтом и кошельком.',
+      href: '/profile',
       icon: <User className="h-8 w-8 text-primary" />,
     },
   ];
@@ -54,14 +54,12 @@ export default function HomePage() {
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
           Добро пожаловать в <span className="text-primary">4xBet</span>
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground">
-          Ваша платформа для ставок на любимые матчи.
-        </p>
+        <p className="text-lg md:text-xl text-muted-foreground">Ваша платформа для ставок на любимые матчи.</p>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {features.map((feature, i) => (
-          <motion.div key={feature.title} custom={i} variants={cardVariants} initial="hidden" animate="visible">
+          <motion.div key={feature.title} custom={i} initial="hidden" animate="visible">
             <Card className="h-full flex flex-col">
               <CardHeader className="flex-row items-center gap-4">
                 {feature.icon}

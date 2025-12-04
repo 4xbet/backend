@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { cn } from '@/libraries/utils';
+import { cn } from '@/shared/hooks/tw-merge';
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<'textarea'>>(
   ({ className, ...props }, ref) => {
