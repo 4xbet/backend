@@ -5,7 +5,6 @@ import Link from "next/link";
 export default function AdminDashboardPage() {
   useEffect(() => {
     console.log('Страница администратора загружена');
-    // Проверяем токен еще раз для уверенности
     const token = localStorage.getItem('authToken');
     if (token) {
       try {

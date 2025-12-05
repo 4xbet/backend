@@ -105,7 +105,7 @@ export default function AdminMatchesPage() {
                   <DialogTitle>Добавить новый матч</DialogTitle>
                   <DialogDescription>
                     {' '}
-                    {/* ← Теперь этот компонент доступен */}
+                    {}
                     Заполните форму для создания нового матча
                   </DialogDescription>
                 </DialogHeader>

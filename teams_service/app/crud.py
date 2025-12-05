@@ -16,7 +16,7 @@ async def get_teams(db: AsyncSession, skip: int = 0, limit: int = 100):
 async def create_team(db: AsyncSession, team: schemas.TeamCreate):
     result = await db.execute(select(models.Team).filter(models.Team.name == team.name))
     if result.scalars().first():
-        return None  # Or raise an exception
+        return None
     db_team = models.Team(**team.dict())
     db.add(db_team)
     await db.commit()

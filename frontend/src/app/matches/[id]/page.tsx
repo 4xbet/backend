@@ -58,7 +58,6 @@ export default function MatchDetailPage() {
       return;
     }
     
-    // Определяем outcome на основе выбранной команды
     let outcome = "";
     if (match && teamId === match.home_team_id) {
       outcome = "win_home";
@@ -70,17 +69,16 @@ export default function MatchDetailPage() {
     }
     
     try {
-      // Отправляем данные с правильными полями для bets_service
       await apiClient.bets.create({
         match_id: parseInt(id),
-        outcome: outcome,           // ← Изменено: team_id → outcome
-        amount_staked: betAmount,   // ← Изменено: amount → amount_staked
+        outcome: outcome,           
+        amount_staked: betAmount,   
       });
       toast.success("Ставка успешно размещена!");
       const walletRes = await apiClient.users.getWallet();
       setWallet(walletRes.data);
-      setAmount(""); // Очистить поле ввода
-      setTeamId(null); // Сбросить выбор команды
+      setAmount(""); 
+      setTeamId(null); 
     } catch (error: any) {
       console.error("Полная ошибка ставки:", error);
       console.error("Ответ сервера:", error.response?.data);

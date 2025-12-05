@@ -39,7 +39,7 @@ export default function WalletPage() {
     try {
       await apiClient.users.updateWallet({ amount: topUpAmount });
       toast.success("Кошелек успешно пополнен!");
-      fetchWallet(); // Refresh wallet balance
+      fetchWallet(); 
       setAmount("");
     } catch (error) {
       toast.error("Не удалось пополнить кошелек.");

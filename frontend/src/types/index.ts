@@ -63,15 +63,15 @@ export interface UpdateOddsData {
 
 export interface CreateBetData {
   match_id: number;
-  outcome: string;      // ← Изменить team_id на outcome
-  amount_staked: number; // ← Изменить amount на amount_staked
+  outcome: string;      
+  amount_staked: number; 
 }
 
 export interface Bet {
   id: number;
   match_id: number;
-  outcome: string;      // ← Изменить
-  amount_staked: number; // ← Изменить
+  outcome: string;      
+  amount_staked: number; 
   status: string;
   odds_on_bet?: number;
   user_id?: number;

@@ -48,7 +48,6 @@ async def create_transaction(db: AsyncSession, transaction: schemas.TransactionC
     return db_transaction
 
 async def settle_bets(db: AsyncSession, match_id: int, winning_outcome: str):
-    # 1. Обновляем статус выигравших ставок
     await db.execute(
         update(models.Bet)
         .where(models.Bet.match_id == match_id)
@@ -56,7 +55,6 @@ async def settle_bets(db: AsyncSession, match_id: int, winning_outcome: str):
         .values(status="won")
     )
     
-    # 2. Обновляем статус проигравших ставок (все остальные ставки этого матча)
     await db.execute(
         update(models.Bet)
         .where(models.Bet.match_id == match_id)
