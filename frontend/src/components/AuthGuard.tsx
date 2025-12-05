@@ -41,7 +41,7 @@ const AuthGuard = ({ children, adminOnly = false }: AuthGuardProps) => {
   }
 
   if (!isLoggedIn || (adminOnly && user?.role !== 'admin')) {
-    return null; // Редирект уже произойдет в useEffect
+    return null; 
   }
 
   return <>{children}</>;

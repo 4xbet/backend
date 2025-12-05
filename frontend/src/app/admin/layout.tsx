@@ -15,7 +15,6 @@ export default function AdminLayout({
   useEffect(() => {
     console.log('AdminLayout проверка авторизации...');
     
-    // Простая проверка токена без использования store
     const token = localStorage.getItem('authToken');
     
     if (!token) {
@@ -25,7 +24,6 @@ export default function AdminLayout({
     }
 
     try {
-      // Декодируем токен вручную
       const payload = JSON.parse(atob(token.split('.')[1]));
       console.log('Декодированный токен:', payload);
       

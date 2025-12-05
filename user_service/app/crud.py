@@ -30,7 +30,6 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     await db.commit()
     await db.refresh(db_user)
 
-    # Create a wallet for the new user
     wallet = models.Wallet(user_id=db_user.id)
     db.add(wallet)
     await db.commit()

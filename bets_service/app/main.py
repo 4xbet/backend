@@ -44,7 +44,6 @@ async def create_bet(
     db: AsyncSession = Depends(get_db),
     current_user: auth.User = Depends(auth.get_current_user),
 ):
-    # Verify user balance and get wallet
     async with httpx.AsyncClient() as client:
         headers = {"Authorization": f"Bearer {current_user.token}"}
         response = await client.get(
@@ -56,7 +55,6 @@ async def create_bet(
         if wallet["balance"] < bet.amount_staked:
             raise HTTPException(status_code=400, detail="Insufficient funds")
 
-    # Get odds from matches_service
     async with httpx.AsyncClient() as client:
         response = await client.get(f"{MATCHES_SERVICE_URL}/matches/{bet.match_id}")
         if response.status_code != 200:
@@ -64,12 +62,10 @@ async def create_bet(
         match = response.json()
         odds_on_bet = match["odds"][bet.outcome]
 
-    # Create bet
     db_bet = await crud.create_bet(
         db=db, bet=bet, user_id=current_user.id, odds_on_bet=odds_on_bet
     )
 
-    # Deduct bet amount from user's wallet
     async with httpx.AsyncClient() as client:
         headers = {"Authorization": f"Bearer {current_user.token}"}
         response = await client.patch(
@@ -78,14 +74,12 @@ async def create_bet(
             headers=headers,
         )
         if response.status_code != 200:
-            # Rollback bet creation if wallet update fails
             await db.delete(db_bet)
             await db.commit()
             raise HTTPException(
                 status_code=500, detail="Failed to update wallet balance"
             )
 
-    # Create transaction
     transaction = schemas.TransactionCreate(
         wallet_id=wallet["id"],
         amount=-bet.amount_staked,

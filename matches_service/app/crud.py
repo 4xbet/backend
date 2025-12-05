@@ -70,23 +70,18 @@ async def complete_match(db: AsyncSession, match_id: int, token: str):
         participants = [db_match.home_team_id, db_match.away_team_id]
         winner_id = random.choice(participants)
         
-        # Определяем строковый результат для bets_service
         winning_outcome = "win_home" if winner_id == db_match.home_team_id else "win_away"
  
         async with httpx.AsyncClient() as client:
             headers = {"Authorization": f"Bearer {token}"}
             
-            # --- НОВАЯ ЧАСТЬ: ОБНОВЛЕНИЕ СТАТУСОВ СТАВОК ---
-            # Сообщаем bets_service, кто победил, чтобы он пометил ставки как won/lost
             settle_response = await client.post(
                 f"{BETS_SERVICE_URL}/matches/{match_id}/settle",
                 json={"winning_outcome": winning_outcome},
                 headers=headers
             )
             settle_response.raise_for_status()
-            # -----------------------------------------------
 
-            # Получаем ставки (они уже могут быть обновлены, но нам нужны данные для выплат)
             response = await client.get(
                 f"{BETS_SERVICE_URL}/matches/{match_id}/bets/", headers=headers
             )
@@ -95,7 +90,6 @@ async def complete_match(db: AsyncSession, match_id: int, token: str):
  
             total_pot = sum(bet["amount_staked"] for bet in bets)
             
-            # Фильтруем победителей (сравниваем с winning_outcome)
             winning_bets = [
                 bet for bet in bets if bet["outcome"] == winning_outcome
             ]
@@ -123,7 +117,6 @@ async def complete_match(db: AsyncSession, match_id: int, token: str):
         return db_match
  
     except Exception as e:
-        # Если что-то сломалось глобально, возвращаем статус active
         db_match.status = "active"
         await db.commit()
         raise e

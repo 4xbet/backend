@@ -3,7 +3,6 @@
 import { motion, MotionProps } from 'framer-motion';
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 
-// Combine motion props and standard button attributes
 type AnimatedButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
   MotionProps & {
     children: ReactNode;

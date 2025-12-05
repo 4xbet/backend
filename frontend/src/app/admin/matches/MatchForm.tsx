@@ -36,7 +36,7 @@ export default function MatchForm({ match, teams, onSuccess }: MatchFormProps) {
         away_team_id: parseInt(awayTeamId),
         start_time: new Date(startTime).toISOString(),
       };
-      console.log("Отправляемые данные:", matchData); // Для отладки
+      console.log("Отправляемые данные:", matchData); 
       await apiClient.matches.create(matchData);
       toast.success("Матч успешно создан!");
       onSuccess();
